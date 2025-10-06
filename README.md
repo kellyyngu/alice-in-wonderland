@@ -68,15 +68,3 @@ npm run preview
 
 ## Game & UX notes
 - Mini-games use keyboard arrow keys for controls and are driven by a requestAnimationFrame loop for smooth movement.
-
-## Troubleshooting
-- "Missing script: dev" — make sure you ran `npm run dev` from the folder that contains `package.json` (see Quick start above).
-- Git errors (e.g., "not a git repository") — if you want to initialize a repo locally:
-```powershell
-git init
-git add -A
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin <your-remote-url>
-git push -u origin main
-```
