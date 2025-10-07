@@ -61,6 +61,60 @@ const Index = () => {
     }
   }, [unlockedChapters, activeIndex]);
 
+  // Apply a brief arrival animation to the newly-rendered section when activeIndex changes
+  useEffect(() => {
+    // map activeIndex to element id used in sections
+    const idMap: Record<number, string> = {
+      0: 'hero',
+      1: 'chapter1',
+      2: 'chapter2',
+      3: 'chapter3',
+      4: 'chapter4',
+      5: 'chapter5',
+      6: 'awakening',
+      7: 'wonderland-gallery'
+    };
+
+    const id = idMap[activeIndex];
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // Scroll the section to the top of the viewport (account for fixed header)
+    const header = document.querySelector('header, .chapter-nav, .site-header, #top');
+    const headerHeight = header ? (header as HTMLElement).getBoundingClientRect().height : 80;
+    const rect = el.getBoundingClientRect();
+    const absoluteTop = window.scrollY + rect.top;
+    const target = Math.max(0, absoluteTop - headerHeight - 12);
+    // Smoothly bring the section to view so the chapter title is visible at the top
+    window.scrollTo({ top: target, behavior: 'smooth' });
+
+    // after scrolling, add the arrive animation and focus (preventScroll true avoids jumping again)
+    const afterScroll = () => {
+      el.classList.add('arrive-target');
+      try {
+        (el as HTMLElement).setAttribute('tabindex', '-1');
+        (el as HTMLElement).focus({ preventScroll: true });
+      } catch (e) {}
+    };
+
+    // allow a short delay to let smooth scroll start before animating/focusing
+    const startDelay = 80;
+    const startTimeout = setTimeout(afterScroll, startDelay);
+
+    const cleanup = () => {
+      el.classList.remove('arrive-target');
+      el.removeAttribute('tabindex');
+    };
+
+    const t = setTimeout(cleanup, 900);
+    return () => {
+      clearTimeout(startTimeout);
+      clearTimeout(t);
+      cleanup();
+    };
+  }, [activeIndex]);
+
   return (
     <div className="relative">
   <ChapterNav activeIndex={activeIndex} setActiveIndex={setActiveIndex} unlockedChapters={unlockedChapters} />
@@ -90,7 +144,7 @@ const Index = () => {
 
       {/* Show the Wonderland gallery only when all five chapters are unlocked and active (index 7) */}
       {activeIndex === 7 && unlockedChapters.chapter1 && unlockedChapters.chapter2 && unlockedChapters.chapter3 && unlockedChapters.chapter4 && unlockedChapters.chapter5 && (
-        <WonderlandGallery />
+        <WonderlandGallery goTo={setActiveIndex} />
       )}
     </div>
   );

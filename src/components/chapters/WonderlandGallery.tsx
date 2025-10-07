@@ -1,6 +1,10 @@
 import { Book, Users, Coffee, Smile, Crown } from "lucide-react";
 import aliceWonderlandImg from "@/assets/alice-wonderland.png";
 
+interface WonderlandGalleryProps {
+  goTo?: (index: number) => void;
+}
+
 const chapters = [
   {
     id: "chapter1",
@@ -34,12 +38,43 @@ const chapters = [
   },
 ];
 
-export const WonderlandGallery = () => {
+export const WonderlandGallery = ({ goTo }: WonderlandGalleryProps) => {
   const scrollToChapter = (id: string) => {
     const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    if (!element) return;
+
+    // If there's a fixed header or nav, account for its height so the section
+    // isn't hidden behind it. Try to detect a header-like element, otherwise
+    // fall back to a sensible default offset.
+    const header = document.querySelector('header, .chapter-nav, .site-header, #top');
+    const headerHeight = header ? (header as HTMLElement).getBoundingClientRect().height : 80;
+
+    const rect = element.getBoundingClientRect();
+    const absoluteTop = window.scrollY + rect.top;
+    const target = Math.max(0, absoluteTop - headerHeight - 12); // small gap
+
+    window.scrollTo({ top: target, behavior: 'smooth' });
+
+    // Update hash so browser history/back works and focus the target for screen readers
+    try {
+      history.pushState(null, '', `#${id}`);
+    } catch (e) {}
+
+    // After scroll completes (approx duration), focus and flash highlight
+    const flash = () => {
+      element.setAttribute('tabindex', '-1');
+      (element as HTMLElement).focus({ preventScroll: true });
+      element.classList.add('flash-target');
+      setTimeout(() => {
+        element.classList.remove('flash-target');
+        element.removeAttribute('tabindex');
+      }, 800);
+    };
+
+    // Use a timeout roughly matching scroll duration; shorter if already near
+    const distance = Math.abs(window.scrollY - target);
+    const approxDuration = Math.min(900, Math.max(300, Math.round(distance / 2)));
+    setTimeout(flash, approxDuration + 80);
   };
 
   return (
@@ -99,7 +134,22 @@ export const WonderlandGallery = () => {
             {chapters.map((chapter, index) => (
               <button
                 key={chapter.id}
-                onClick={() => scrollToChapter(chapter.id)}
+                onClick={() => {
+                  // If a goTo handler is provided (from Index), use app navigation instead
+                  if (goTo) {
+                    // map chapter ids to activeIndex: hero=0, chapter1=1..chapter5=5
+                    if (chapter.id === 'hero') return goTo(0);
+                    if (chapter.id.startsWith('chapter')) {
+                      const num = Number(chapter.id.replace('chapter', ''));
+                      if (!Number.isNaN(num)) return goTo(num);
+                    }
+                    // fallback: open gallery itself
+                    return;
+                  }
+
+                  // otherwise fall back to DOM scroll behavior
+                  scrollToChapter(chapter.id);
+                }}
                 className="group bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all hover:scale-105 hover:shadow-2xl"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
@@ -157,7 +207,10 @@ export const WonderlandGallery = () => {
           </h2>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <button
-              onClick={() => scrollToChapter("chapter3")}
+              onClick={() => {
+                if (goTo) return goTo(3);
+                return scrollToChapter("chapter3");
+              }}
               className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-8 hover:scale-105 transition-all shadow-2xl group"
             >
               <Coffee className="w-12 h-12 mx-auto mb-4 text-white" />
@@ -170,7 +223,10 @@ export const WonderlandGallery = () => {
             </button>
 
             <button
-              onClick={() => scrollToChapter("chapter4")}
+              onClick={() => {
+                if (goTo) return goTo(4);
+                return scrollToChapter("chapter4");
+              }}
               className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-8 hover:scale-105 transition-all shadow-2xl group"
             >
               <Smile className="w-12 h-12 mx-auto mb-4 text-white" />
@@ -183,7 +239,10 @@ export const WonderlandGallery = () => {
             </button>
 
             <button
-              onClick={() => scrollToChapter("hero")}
+              onClick={() => {
+                if (goTo) return goTo(0);
+                return scrollToChapter("hero");
+              }}
               className="bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl p-8 hover:scale-105 transition-all shadow-2xl group"
             >
               <Book className="w-12 h-12 mx-auto mb-4 text-white" />
