@@ -34,33 +34,34 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
       return 0;
     }
   });
+
   const [playerX, setPlayerX] = useState(50);
   const [objects, setObjects] = useState<FallingObject[]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
+  const [difficulty, setDifficulty] = useState(0); // ramps up over time
+  const [showHint, setShowHint] = useState(true);
+  const [preStart, setPreStart] = useState(true);
+
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const objectIdRef = useRef(0);
-  const gameLoopRef = useRef<number>();
+  const gameLoopRef = useRef<number | null>(null);
   const keysRef = useRef({ left: false, right: false });
   const playerXRef = useRef(50);
   const velocityRef = useRef(0);
 
-  // Make the mini-game easier: fewer hearts needed and slightly larger collision box
+  // Gameplay tuning
   const TARGET_SCORE = 4;
   const GAME_WIDTH = 100;
-  // Collision radius (percent of width). Increase slightly to make catching easier.
-  const PLAYER_SIZE = 7;
-  const HEART_CHANCE = 0.66; // ~66% hearts, 34% spades
+  const PLAYER_SIZE = 7; // collision radius in percent
+  const HEART_CHANCE_BASE = 0.66; // base heart probability
 
-  // Tweakable fall speed and spawn grid
-  // Make hearts and spades fall slower and spawn on a finer horizontal grid
-  const FALL_SPEED_MIN = 0.25; // percent per frame - minimum fall speed
-  const FALL_SPEED_VARIANCE = 0.45; // added random range
-  const SPAWN_STEP = 0.5; // horizontal snap step in percent (smaller -> finer placement)
+  const FALL_SPEED_MIN = 0.25;
+  const FALL_SPEED_VARIANCE = 0.45;
+  const SPAWN_STEP = 0.5;
+  const BASE_SPAWN_INTERVAL = 1000;
 
-  // Reset the game state for retrying the same chapter (no full reload)
   const resetGame = () => {
-    // clear objects, reset refs and state
     setObjects([]);
     setScore(0);
     setGameOver(false);
@@ -69,124 +70,124 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
     playerXRef.current = 50;
     velocityRef.current = 0;
     setPlayerX(50);
+    setPreStart(true);
+    setShowHint(true);
   };
 
-  // Persist attempts and best score whenever they change
+  // persist attempts/bestScore
   useEffect(() => {
     try {
       localStorage.setItem(`aiw-mini-attempts-${chapterNumber}`, String(attempts));
       localStorage.setItem(`aiw-mini-best-${chapterNumber}`, String(bestScore));
     } catch (e) {
-      // ignore storage errors
+      // ignore
     }
   }, [attempts, bestScore, chapterNumber]);
 
+  // Spawner: respects preStart and increases spade frequency by chapter/difficulty
   useEffect(() => {
-    // Spawn objects (slower falling and slightly less frequent)
-    const spawnInterval = setInterval(() => {
-      if (!gameOver && !gameWon) {
-        setObjects((prev) => {
-          // compute fine-grained spawn X snapped to SPAWN_STEP
-          const rawX = Math.random() * (GAME_WIDTH - 10) + 5;
-          const snappedX = Math.round(rawX / SPAWN_STEP) * SPAWN_STEP;
-          const speed = FALL_SPEED_MIN + Math.random() * FALL_SPEED_VARIANCE;
+  const chapterMultiplier = 1 + Math.max(0, chapterNumber - 1) * 0.2;
+  // Extra difficulty boost for early chapters (1-3): faster spawns and faster falls
+  const earlyBoost = chapterNumber <= 3 ? 0.35 : 0;
+  const earlySpawnPenalty = chapterNumber <= 3 ? 200 : 0; // ms faster spawns for ch 1-3
+  const spawnMs = Math.max(250, Math.round(BASE_SPAWN_INTERVAL - (chapterNumber - 1) * 150 - difficulty * 80 - earlySpawnPenalty));
 
-          return [
-            ...prev,
-            {
-              id: objectIdRef.current++,
-              x: snappedX,
-              y: 0,
-              // use configured slower speeds
-              speed,
-              type: Math.random() < HEART_CHANCE ? "heart" : "spade",
-            },
-          ];
-        });
-      }
-    }, 1000);
+    const id = setInterval(() => {
+      if (preStart || gameOver || gameWon) return;
 
-    return () => clearInterval(spawnInterval);
-  }, [gameOver, gameWon]);
+      setObjects((prev) => {
+        const rawX = Math.random() * (GAME_WIDTH - 10) + 5;
+        const snappedX = Math.round(rawX / SPAWN_STEP) * SPAWN_STEP;
+  const speedBase = FALL_SPEED_MIN + Math.random() * FALL_SPEED_VARIANCE;
+  // apply difficulty ramp, chapter multiplier and early-chapter boost to speed
+  const speed = speedBase * (1 + (difficulty * 0.15) + (chapterMultiplier - 1) + earlyBoost);
+  // lower heart chance for earlier chapters to increase spade frequency; clamp to a reasonable minimum
+  const heartChance = Math.max(0.15, HEART_CHANCE_BASE - (chapterNumber - 1) * 0.08 - difficulty * 0.03 - (chapterNumber <= 3 ? 0.18 : 0));
 
+        return [
+          ...prev,
+          {
+            id: objectIdRef.current++,
+            x: snappedX,
+            y: 0,
+            speed,
+            type: Math.random() < heartChance ? "heart" : "spade",
+          },
+        ];
+      });
+    }, spawnMs);
+
+    return () => clearInterval(id);
+  }, [chapterNumber, difficulty, gameOver, gameWon, preStart]);
+
+  // Main game loop
   useEffect(() => {
-    // Game loop (objects + player physics) using requestAnimationFrame for smoothness
-  // Tuned for smaller steps / less jumpy movement when pressing arrow keys
-  const ACCEL = 0.12; // percent per frame^2 (smaller acceleration)
-  const MAX_SPEED = 1.1; // percent per frame (lower top speed)
-  const FRICTION = 0.86; // slightly higher friction so it settles quicker
+    const ACCEL = 0.12;
+    const MAX_SPEED = 1.1;
+    const FRICTION = 0.86;
 
-    const gameLoop = () => {
+    const loop = () => {
       if (!gameOver && !gameWon) {
-        // Update player physics
         const keys = keysRef.current;
-        if (keys.left && !keys.right) {
-          velocityRef.current -= ACCEL;
-        } else if (keys.right && !keys.left) {
-          velocityRef.current += ACCEL;
-        } else {
-          // apply friction
-          velocityRef.current *= FRICTION;
-        }
+        if (keys.left && !keys.right) velocityRef.current -= ACCEL;
+        else if (keys.right && !keys.left) velocityRef.current += ACCEL;
+        else velocityRef.current *= FRICTION;
 
-        // clamp velocity
-        velocityRef.current = Math.max(
-          -MAX_SPEED,
-          Math.min(MAX_SPEED, velocityRef.current)
-        );
+        velocityRef.current = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, velocityRef.current));
+        playerXRef.current = Math.max(5, Math.min(95, playerXRef.current + velocityRef.current));
 
-        // update player position
-        playerXRef.current = Math.max(
-          5,
-          Math.min(95, playerXRef.current + velocityRef.current)
-        );
-
-        // Update falling objects and check collisions
         setObjects((prev) => {
-          const updated = prev
-            .map((obj) => ({ ...obj, y: obj.y + obj.speed }))
-            .filter((obj) => obj.y < 100);
+          const remaining: FallingObject[] = [];
 
-          // Check collisions against playerXRef for immediacy
-          updated.forEach((obj) => {
-            if (
-              obj.y > 85 &&
-              obj.y < 95 &&
-              Math.abs(obj.x - playerXRef.current) < PLAYER_SIZE
-            ) {
+          prev.forEach((obj) => {
+            const newY = obj.y + obj.speed;
+            if (newY >= 100) return;
+
+            const isColliding = newY > 85 && newY < 95 && Math.abs(obj.x - playerXRef.current) < PLAYER_SIZE;
+            if (isColliding) {
               if (obj.type === "heart") {
                 setScore((s) => {
                   const newScore = s + 1;
-                  if (newScore >= TARGET_SCORE) {
-                    setGameWon(true);
-                  }
+                  if (newScore >= TARGET_SCORE) setGameWon(true);
                   return newScore;
                 });
               } else {
                 setGameOver(true);
               }
+            } else {
+              remaining.push({ ...obj, y: newY });
             }
           });
 
-          return updated;
+          return remaining;
         });
 
-        // push visual state from refs to React state (keeps UI in sync)
         setPlayerX(playerXRef.current);
       }
 
-      gameLoopRef.current = requestAnimationFrame(gameLoop);
+      gameLoopRef.current = requestAnimationFrame(loop);
     };
 
-    gameLoopRef.current = requestAnimationFrame(gameLoop);
+    gameLoopRef.current = requestAnimationFrame(loop);
     return () => {
-      if (gameLoopRef.current) {
-        cancelAnimationFrame(gameLoopRef.current);
-      }
+      if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     };
-  }, [gameOver, gameWon, playerX]);
+  }, [gameOver, gameWon]);
 
-  // When gameOver set, increment attempts and update bestScore
+  // difficulty ramp
+  useEffect(() => {
+    const id = setInterval(() => setDifficulty((d) => Math.min(3, d + 1)), 8000);
+    return () => clearInterval(id);
+  }, [gameOver, gameWon]);
+
+  // hint auto-hide
+  useEffect(() => {
+    if (!showHint) return;
+    const t = setTimeout(() => setShowHint(false), 4000);
+    return () => clearTimeout(t);
+  }, [showHint]);
+
+  // attempts/best updates
   useEffect(() => {
     if (gameOver) {
       setAttempts((a) => a + 1);
@@ -194,7 +195,6 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
     }
   }, [gameOver]);
 
-  // When gameWon set, record attempt and bestScore
   useEffect(() => {
     if (gameWon) {
       setAttempts((a) => a + 1);
@@ -202,11 +202,10 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
     }
   }, [gameWon]);
 
+  // keyboard controls
   useEffect(() => {
-    // Only use arrow keys for controls. Track keydown and keyup for smooth continuous movement.
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameOver || gameWon) return;
-
       if (e.key === "ArrowLeft") {
         keysRef.current.left = true;
         e.preventDefault();
@@ -234,94 +233,92 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
     };
   }, [gameOver, gameWon]);
 
+  // start with Enter/Space
+  useEffect(() => {
+    if (!preStart) return;
+    const onStartKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        setPreStart(false);
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("keydown", onStartKey);
+    return () => window.removeEventListener("keydown", onStartKey);
+  }, [preStart]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center with-wallpaper" style={{ ["--wallpaper-url" as any]: `url(${wallpaper})` }}>
       <div className="max-w-2xl w-full mx-auto px-6">
+        {showHint && (
+          <div className="fixed top-6 right-6 z-50">
+            <div
+              onClick={() => setShowHint(false)}
+              className="bg-black/70 text-white px-4 py-3 rounded-lg cursor-pointer shadow-lg"
+              role="button"
+              aria-label="Dismiss hint"
+            >
+              Use ← → arrow keys to move • Catch 4 ❤️ to proceed
+            </div>
+          </div>
+        )}
+
         <div className="text-center mb-8">
           <h2 className="font-serif text-5xl font-bold text-white mb-4">
             Escape the {chapterNumber === 1 ? "Rabbit Hole" : chapterNumber === 2 ? "Drink Me Curse" : chapterNumber === 3 ? "Mad Tea Party" : chapterNumber === 4 ? "Cheshire's Riddle" : "Queen's Wrath"}!
           </h2>
-          <p className="text-white/80 text-xl mb-2">
-            Collect {TARGET_SCORE} ❤️ hearts to proceed • Avoid ♠️ spades!
-          </p>
-          <div className="text-3xl font-bold text-accent">
-            Score: {score} / {TARGET_SCORE}
-          </div>
-          <div className="mt-2 text-sm text-white/70">
-            Attempts: {attempts} • Best: {bestScore}
-          </div>
+          <p className="text-white/80 text-xl mb-2">Collect {TARGET_SCORE} ❤️ hearts to proceed • Avoid ♠️ spades!</p>
+          <div className="text-3xl font-bold text-accent">Score: {score} / {TARGET_SCORE}</div>
+          <div className="mt-2 text-sm text-white/70">Attempts: {attempts} • Best: {bestScore}</div>
         </div>
 
-        <div
-          ref={gameAreaRef}
-          className="relative bg-black/40 backdrop-blur-sm rounded-3xl border-4 border-white/20 overflow-hidden"
-          style={{ height: "500px" }}
-        >
+        <div ref={gameAreaRef} className="relative bg-black/40 backdrop-blur-sm rounded-3xl border-4 border-white/20 overflow-hidden" style={{ height: "500px" }}>
+          {/* pre-start overlay */}
+          {preStart && !gameOver && !gameWon && (
+            <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+              <div className="bg-white/5 p-8 rounded-2xl text-center max-w-lg">
+                <h3 className="text-3xl font-serif font-bold text-white mb-4">How to Play</h3>
+                <p className="text-white/80 mb-6">Use the ← and → arrow keys to move. Catch {TARGET_SCORE} hearts and avoid spades. Press <span className="font-bold">Start</span> or press Enter to begin.</p>
+                <div className="flex items-center justify-center gap-4">
+                  <button onClick={() => { setPreStart(false); setShowHint(true); }} className="bg-accent text-accent-foreground px-6 py-3 rounded-full font-bold">Start</button>
+                  <button onClick={onFailure} className="bg-muted text-foreground px-6 py-3 rounded-full font-bold">Exit</button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Falling objects */}
           {objects.map((obj) => (
-            <div
-              key={obj.id}
-              className="absolute text-4xl"
-              style={{
-                left: `${obj.x}%`,
-                top: `${obj.y}%`,
-                transform: "translate(-50%, -50%)",
-                willChange: "transform, top",
-              }}
-            >
+            <div key={obj.id} className="absolute text-4xl" style={{ left: `${obj.x}%`, top: `${obj.y}%`, transform: "translate(-50%, -50%)", willChange: "transform, top" }}>
               {obj.type === "heart" ? "❤️" : "♠️"}
             </div>
           ))}
 
           {/* Player */}
-          <div
-            className="absolute bottom-8 w-16 h-16"
-            style={{
-              left: `${playerX}%`,
-              transform: "translateX(-50%)",
-              willChange: "transform, left",
-            }}
-          >
-            <div className="w-full h-full bg-accent rounded-full shadow-lg shadow-accent/50 flex items-center justify-center text-2xl animate-pulse">
-              ✨
-            </div>
+          <div className="absolute bottom-8 w-16 h-16" style={{ left: `${playerX}%`, transform: "translateX(-50%)", willChange: "transform, left" }}>
+            <div className="w-full h-full bg-accent rounded-full shadow-lg shadow-accent/50 flex items-center justify-center text-2xl animate-pulse">✨</div>
           </div>
 
-          {/* Game Over Overlay */}
+          {/* Game Over */}
           {gameOver && (
             <div className="absolute inset-0 bg-black/80 flex items-center justify-center flex-col gap-6 animate-fade-in">
               <X className="w-24 h-24 text-destructive" />
               <h3 className="font-serif text-4xl font-bold text-white">Lost in Wonderland!</h3>
               <p className="text-white/80 text-lg">You hit a spade...</p>
               <div className="flex gap-4">
-                <button
-                  onClick={() => resetGame()}
-                  className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-bold hover:bg-primary/90 transition-all hover:scale-105"
-                >
-                  Try Again
-                </button>
-                <button
-                  onClick={onFailure}
-                  className="bg-muted text-foreground px-8 py-4 rounded-full font-bold hover:bg-muted/80 transition-all hover:scale-105"
-                >
-                  Exit Game
-                </button>
+                <button onClick={() => resetGame()} className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-bold hover:bg-primary/90 transition-all hover:scale-105">Try Again</button>
+                <button onClick={onFailure} className="bg-muted text-foreground px-8 py-4 rounded-full font-bold hover:bg-muted/80 transition-all hover:scale-105">Exit Game</button>
               </div>
             </div>
           )}
 
-          {/* Victory Overlay */}
+          {/* Victory */}
           {gameWon && (
             <div className="absolute inset-0 bg-black/80 flex items-center justify-center flex-col gap-6 animate-fade-in">
               <Heart className="w-24 h-24 text-accent animate-pulse" />
               <h3 className="font-serif text-4xl font-bold text-white">Chapter Unlocked!</h3>
               <p className="text-white/80 text-lg">You collected {TARGET_SCORE} hearts!</p>
-              <button
-                onClick={onSuccess}
-                className="bg-accent text-accent-foreground px-12 py-4 rounded-full font-bold hover:bg-accent/90 transition-all hover:scale-105 text-xl"
-              >
-                Continue Adventure →
-              </button>
+              <button onClick={onSuccess} className="bg-accent text-accent-foreground px-12 py-4 rounded-full font-bold hover:bg-accent/90 transition-all hover:scale-105 text-xl">Continue Adventure →</button>
             </div>
           )}
         </div>

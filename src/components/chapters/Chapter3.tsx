@@ -3,8 +3,11 @@ import { DialogueBox } from "../DialogueBox";
 import { MiniGame } from "../MiniGame";
 import { CharacterImage } from "../CharacterImage";
 import madHatterImg from "@/assets/mad-hatter.png";
+import madHatterNoRoomImg from "@/assets/madhatter-noroom.png";
 import marchHareImg from "@/assets/march-hare.png";
 import aliceImg from "@/assets/alice.png";
+import teaPartyImg from "@/assets/the-mad-tea-party.png";
+import dormouseAsleepImg from "@/assets/dormouse-asleep.png";
 import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter3Props {
@@ -124,8 +127,12 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
             />
           </div>
 
-          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
+          <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center text-lg italic animate-fade-in mb-8">
             Alice joins the Mad Hatter, March Hare, and Dormouse at a chaotic tea party.
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <img src={teaPartyImg} alt="Mad Tea Party" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
           </div>
         </div>
 
@@ -137,6 +144,9 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
             characterImage={madHatterImg}
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
           />
+          <div className="flex justify-center mt-4">
+            <img src={madHatterNoRoomImg} alt="Mad Hatter - No room" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+          </div>
           <DialogueBox 
             speaker="Alice" 
             text="But there's plenty of space!" 
@@ -191,10 +201,14 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
           />
 
           <div className="text-center my-6">
-            <div className="inline-flex items-center gap-3 bg-muted/50 rounded-2xl px-6 py-4">
+            <div className="inline-flex items-center gap-3 bg-purple-900/70 text-white/90 backdrop-blur-sm rounded-2xl px-6 py-4">
               <span className="text-5xl">😴</span>
-              <span className="text-muted-foreground italic">(Dormouse falls asleep mid-sentence.)</span>
+              <span className="italic text-white/90">(Dormouse falls asleep mid-sentence.)</span>
             </div>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <img src={dormouseAsleepImg} alt="Dormouse asleep" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
           </div>
 
           <DialogueBox 

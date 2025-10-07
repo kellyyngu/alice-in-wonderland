@@ -126,7 +126,7 @@ const Index = () => {
       )}
 
       {/* Awakening page (shown after Chapter 5 completes, before gallery) */}
-      {activeIndex === 6 && (
+      {activeIndex === 6 && unlockedChapters.chapter5 && (
         <Awakening goTo={setActiveIndex} />
       )}
 

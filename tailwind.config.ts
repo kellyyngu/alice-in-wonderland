@@ -134,7 +134,7 @@ export default {
         "appear": "appear 2s ease-in forwards",
         "disappear": "disappear 2s ease-out forwards",
         "grin": "grin 3s ease-in-out infinite",
-        "card-explosion": "card-explosion 1.5s ease-out forwards",
+  "card-explosion": "card-explosion 6s ease-out forwards",
         "shimmer": "shimmer 3s linear infinite",
         "shake": "shake 0.5s ease-in-out",
       },

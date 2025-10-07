@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { DialogueBox } from "../DialogueBox";
 import { CharacterImage } from "../CharacterImage";
 import queenOfHeartsImg from "@/assets/queen-of-hearts.png";
 import kingOfHeartsImg from "@/assets/king-of-hearts.png";
 import aliceImg from "@/assets/alice.png";
+import qohGardenImg from "@/assets/qoh-garden.png";
+import aliceDefianceImg from "@/assets/alice-defiance.png";
 import wallpaper from "@/assets/wallpaper.png";
 
 const suits = ["♥️", "♦️", "♣️", "♠️"];
@@ -18,14 +20,35 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
   const [exploded, setExploded] = useState(false);
   const [awakened, setAwakened] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
+  const [shaking, setShaking] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [buttonCoords, setButtonCoords] = useState<{ left: string; top: string } | null>(null);
+  const [flash, setFlash] = useState(false);
 
   const handleExplosion = () => {
+    // capture button position for localized explosions
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      // center point of the button in viewport pixels
+      setButtonCoords({ left: `${rect.left + rect.width / 2}px`, top: `${rect.top + rect.height / 2}px` });
+    }
+
+    // trigger a quick screen shake
+    setShaking(true);
+    setTimeout(() => setShaking(false), 1400);
+
+    // quick white flash to emphasize impact
+    setFlash(true);
+    setTimeout(() => setFlash(false), 220);
+
+    // do not change the user's scroll position — the explosion overlay is fixed and will cover the viewport
     setExploded(true);
-    // After the explosion sequence, wake Alice and mark chapter as complete (no mini-game)
+
+    // match the card animation length (6s) plus a small buffer
     setTimeout(() => {
       setAwakened(true);
       onComplete?.();
-    }, 2000);
+    }, 7000);
   };
 
 
@@ -56,7 +79,7 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
   return (
     <section
       id="chapter5"
-      className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden with-wallpaper"
+      className={`min-h-screen flex items-center justify-center py-20 relative overflow-hidden with-wallpaper ${shaking ? "animate-shake" : ""}`}
       style={{ ["--wallpaper-url" as any]: `url(${wallpaper})` }}
     >
       {/* Floating roses */}
@@ -77,25 +100,96 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
       </div>
 
       {/* Card explosion effect */}
-      {exploded && (
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(30)].map((_, i) => (
+        {/* Full-screen fixed explosion overlay so it's visible regardless of scroll */}
+        {exploded && (
+          <div className="fixed inset-0 pointer-events-none z-[70] overflow-hidden">
+            {/* subtle white flash */}
+            {flash && <div className="absolute inset-0 bg-white/90 z-[80]" />}
+            {[...Array(220)].map((_, i) => {
+              const sizeClass = i % 5 === 0 ? "text-9xl" : i % 3 === 0 ? "text-8xl" : "text-7xl";
+              const left = `${Math.random() * 100}%`;
+              const top = `${Math.random() * 100}%`;
+              const tx = `${(Math.random() - 0.5) * 500}vw`;
+              const ty = `${(Math.random() - 0.5) * 500}vh`;
+              const delay = `${Math.random() * 2.2}s`;
+              // color hearts red, others black for dramatic effect
+              const suit = suits[Math.floor(Math.random() * suits.length)];
+              const colorStyle = suit === "♥️" ? { color: "#ff4d6d" } : { color: "#111" };
+              return (
+                <div
+                  key={i}
+                  className={`absolute ${sizeClass} animate-card-explosion`} 
+                  style={{
+                    left,
+                    top,
+                    // @ts-ignore
+                    "--tx": tx,
+                    // @ts-ignore
+                    "--ty": ty,
+                    animationDelay: delay,
+                    opacity: 0.98,
+                    ...colorStyle,
+                  }}
+                >
+                  {suit}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+      {/* Localized explosions beside the button (two clusters) */}
+      {exploded && buttonCoords && (
+        <>
+          {[0, 1, 2].map((n) => (
             <div
-              key={i}
-              className="absolute text-6xl animate-card-explosion"
+              key={n}
+              // use fixed so coordinates are viewport-based and align exactly with the button
+              className="fixed pointer-events-none"
               style={{
-                left: "50%",
-                top: "50%",
-                // @ts-ignore
-                "--tx": `${(Math.random() - 0.5) * 200}vw`,
-                "--ty": `${(Math.random() - 0.5) * 200}vh`,
-                animationDelay: `${i * 0.05}s`,
+                left: buttonCoords.left,
+                top: buttonCoords.top,
+                transform:
+                  n === 0
+                    ? `translate(-50%, -50%) translate(-6rem, -2rem)` // left cluster
+                    : n === 1
+                    ? `translate(-50%, -120%)` // above cluster
+                    : `translate(-50%, -50%) translate(6rem, 2rem)`, // right cluster
+                width: "0",
+                height: "0",
+                zIndex: 60,
               }}
             >
-              {suits[i % suits.length]}
+              {/* each cluster spawns a small burst biased toward hearts/spades */}
+              {[...Array(18)].map((_, i) => {
+                const sizeClass = i % 4 === 0 ? "text-5xl" : "text-4xl";
+                const tx = `${(Math.random() - 0.5) * 80}vw`;
+                const ty = `${(Math.random() - 0.5) * 80}vh`;
+                const delay = `${Math.random() * 0.6}s`;
+                const localSuits = ["♥️", "♠️", "♥️", "♠️", "♦️", "♣️"];
+                const suit = localSuits[Math.floor(Math.random() * localSuits.length)];
+                return (
+                  <div
+                    key={i}
+                    className={`absolute ${sizeClass} animate-card-explosion`} 
+                    style={{
+                      left: 0,
+                      top: 0,
+                      // @ts-ignore
+                      "--tx": tx,
+                      // @ts-ignore
+                      "--ty": ty,
+                      animationDelay: delay,
+                      opacity: 0.98,
+                    }}
+                  >
+                    {suit}
+                  </div>
+                );
+              })}
             </div>
           ))}
-        </div>
+        </>
       )}
 
       <div className="max-w-4xl mx-auto px-6 z-10">
@@ -124,9 +218,13 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                 />
               </div>
 
-              <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
-                Alice enters the Queen of Hearts' garden, where chaos reigns.
-              </div>
+              <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center text-lg italic animate-fade-in mb-8">
+                    Alice enters the Queen of Hearts' garden, where chaos reigns.
+                  </div>
+
+                  <div className="flex justify-center mt-4">
+                    <img src={qohGardenImg} alt="Queen of Hearts Garden" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+                  </div>
             </div>
 
             <div className="space-y-6">
@@ -144,6 +242,10 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                 characterImage={aliceImg}
                 onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
               />
+              {/* Image: Alice defiant reaction - placed after Alice's protest */}
+              <div className="flex justify-center mt-4">
+                <img src={aliceDefianceImg} alt="Alice defiant" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+              </div>
               <DialogueBox 
                 speaker="King" 
                 text="My dear, perhaps a trial first?" 
@@ -162,8 +264,9 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
               {!exploded && (
                 <div className="text-center pt-8">
                   <button
-                    onClick={handleExplosion}
-                    className="bg-destructive text-destructive-foreground px-12 py-4 rounded-full text-xl font-bold hover:bg-destructive/90 transition-all hover:scale-105 shadow-lg animate-pulse"
+                        ref={buttonRef}
+                        onClick={handleExplosion}
+                        className="bg-destructive text-destructive-foreground px-12 py-4 rounded-full text-xl font-bold hover:bg-destructive/90 transition-all hover:scale-105 shadow-lg animate-pulse"
                   >
                     "You're nothing but a pack of cards!"
                   </button>
@@ -171,21 +274,9 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
               )}
 
                       {exploded && (
-                        <div className="bg-destructive/20 backdrop-blur-sm rounded-2xl p-6 text-center text-foreground/80 text-lg italic animate-fade-in mt-8">
+                        <div className="bg-purple-900/70 text-white/90 backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic animate-fade-in mt-8">
                           <p>(Cards swirl, screen shakes — transition to waking up.)</p>
-                          <div className="mt-6 flex justify-center gap-4">
-                            <button
-                              onClick={() => {
-                                const gallery = document.getElementById("wonderland-gallery");
-                                if (gallery) {
-                                  gallery.scrollIntoView({ behavior: "smooth" });
-                                }
-                              }}
-                              className="bg-accent text-accent-foreground px-8 py-3 rounded-full font-bold hover:bg-accent/90 transition-all hover:scale-105"
-                            >
-                              Enter Wonderland Gallery ✨
-                            </button>
-                          </div>
+                              {/* Gallery entry removed per design; user returns to awakening flow */}
                         </div>
                       )}
             </div>

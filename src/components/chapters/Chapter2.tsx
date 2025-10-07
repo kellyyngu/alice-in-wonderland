@@ -2,6 +2,8 @@ import { useState } from "react";
 import { DialogueBox } from "../DialogueBox";
 import { MiniGame } from "../MiniGame";
 import drinkMeImg from "@/assets/drink-me-bottle.png";
+import drinkEatImg from "@/assets/drink-eat-me.png";
+import eatMeCake from "@/assets/eat-me-cake.png";
 import aliceImg from "@/assets/alice.png";
 import { CharacterImage } from "../CharacterImage";
 import wallpaper from "@/assets/wallpaper.png";
@@ -92,7 +94,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
           <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">Drink Me, Eat Me</h2>
 
           <div className="mb-8">
-            <img src={drinkMeImg} alt="Drink Me Bottle" className="max-w-sm mx-auto drop-shadow-2xl" />
+            <img src={drinkEatImg} alt="Drink & Eat" className="max-w-sm mx-auto drop-shadow-2xl" />
           </div>
         </div>
 
@@ -105,6 +107,9 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
           characterImage={drinkMeImg}
           onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Bottle")}
         />
+        <div className="flex justify-center mt-4">
+          <img src={drinkMeImg} alt="Drink me bottle" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
+        </div>
 
         <DialogueBox
           speaker="Alice"
@@ -129,54 +134,54 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
             </div>
           </div>
 
-          <div className="flex gap-8">
-            <button
-            onClick={() => {
-              setAliceSize("small");
-              // Play shrinking sound
-              const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-              const oscillator = audioContext.createOscillator();
-              const gainNode = audioContext.createGain();
-              oscillator.connect(gainNode);
-              gainNode.connect(audioContext.destination);
-              oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-              oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.5);
-              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-              oscillator.start(audioContext.currentTime);
-              oscillator.stop(audioContext.currentTime + 0.5);
-            }}
-            className="group relative"
-          >
-            <div className="bg-black/55 hover:bg-black/60 backdrop-blur-md rounded-2xl p-8 transition-all hover:scale-105 border border-white/10">
-              <div className="text-6xl mb-3">🧪</div>
-              <div className="font-serif text-xl font-bold text-white">Drink Me</div>
+          <div className="flex gap-16">
+            <div className="bg-black/55 hover:bg-black/60 backdrop-blur-md rounded-4xl p-16 transition-all hover:scale-105 border border-white/10 min-w-[320px] flex flex-col items-center">
+              <img
+                src={drinkMeImg}
+                alt="Drink me bottle"
+                className="w-28 h-28 mb-6 mx-auto object-contain cursor-pointer"
+                onClick={() => {
+                  setAliceSize("small");
+                  // Play shrinking sound
+                  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                  const oscillator = audioContext.createOscillator();
+                  const gainNode = audioContext.createGain();
+                  oscillator.connect(gainNode);
+                  gainNode.connect(audioContext.destination);
+                  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                  oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.5);
+                  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                  oscillator.start(audioContext.currentTime);
+                  oscillator.stop(audioContext.currentTime + 0.5);
+                }}
+              />
+              <div className="font-serif text-3xl font-bold text-white">Drink Me</div>
             </div>
-          </button>
 
-          <button
-            onClick={() => {
-              setAliceSize("large");
-              // Play growing sound
-              const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-              const oscillator = audioContext.createOscillator();
-              const gainNode = audioContext.createGain();
-              oscillator.connect(gainNode);
-              gainNode.connect(audioContext.destination);
-              oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-              oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.5);
-              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-              oscillator.start(audioContext.currentTime);
-              oscillator.stop(audioContext.currentTime + 0.5);
-            }}
-            className="group relative"
-          >
-            <div className="bg-black/55 hover:bg-black/60 backdrop-blur-md rounded-2xl p-8 transition-all hover:scale-105 border border-white/10">
-              <div className="text-6xl mb-3">🧁</div>
-              <div className="font-serif text-xl font-bold text-white">Eat Me</div>
+            <div className="bg-black/55 hover:bg-black/60 backdrop-blur-md rounded-4xl p-16 transition-all hover:scale-105 border border-white/10 min-w-[320px] flex flex-col items-center">
+              <img
+                src={eatMeCake}
+                alt="Eat me cake"
+                className="w-28 h-28 mb-6 mx-auto object-contain cursor-pointer"
+                onClick={() => {
+                  setAliceSize("large");
+                  // Play growing sound
+                  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                  const oscillator = audioContext.createOscillator();
+                  const gainNode = audioContext.createGain();
+                  oscillator.connect(gainNode);
+                  gainNode.connect(audioContext.destination);
+                  oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                  oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.5);
+                  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                  oscillator.start(audioContext.currentTime);
+                  oscillator.stop(audioContext.currentTime + 0.5);
+                }}
+              />
+              <div className="font-serif text-3xl font-bold text-white">Eat Me</div>
             </div>
-          </button>
           </div>
         </div>
 
@@ -195,6 +200,9 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
               characterImage={drinkMeImg}
               onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
             />
+            <div className="flex justify-center mt-4">
+              <img src={eatMeCake} alt="Eat me cake" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
+            </div>
             <DialogueBox
               speaker="Alice"
               text="You again? Alright then!"
@@ -221,7 +229,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
         )}
 
         {gameComplete && (
-          <div className="bg-accent/20 backdrop-blur-sm rounded-2xl p-6 text-foreground text-center animate-fade-in">
+          <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center animate-fade-in">
             <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
           </div>
         )}

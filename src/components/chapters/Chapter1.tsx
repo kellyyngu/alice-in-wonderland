@@ -5,6 +5,9 @@ import { MiniGame } from "../MiniGame";
 import { CharacterImage } from "../CharacterImage";
 import whiteRabbitImg from "@/assets/white-rabbit.png";
 import aliceImg from "@/assets/alice.png";
+import aliceFollowsImg from "@/assets/alice-follows-white-rabbit.png";
+import aliceFallsImg from "@/assets/alice-falls-down.png";
+import aliceSeesWhiteRabbitImg from "@/assets/alice-sees-white-rabbit.png";
 import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter1Props {
@@ -92,7 +95,7 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
             />
           </div>
 
-          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
+          <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center text-lg italic animate-fade-in mb-8">
             Alice sees the White Rabbit rushing by and decides to follow him, leading her to fall down a rabbit hole.
           </div>
         </div>
@@ -105,6 +108,9 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
             characterImage={aliceImg}
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
           />
+          <div className="flex justify-center mt-4">
+            <img src={aliceSeesWhiteRabbitImg} alt="Alice sees White Rabbit" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+          </div>
           <DialogueBox 
             speaker="White Rabbit" 
             text="Oh dear! Oh dear! I shall be late!" 
@@ -120,16 +126,25 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
           />
           
-          <div className="bg-primary/20 backdrop-blur-sm rounded-2xl p-6 text-white/90 text-center text-lg italic animate-fade-in" style={{ animationDelay: "9000ms" }}>
+          <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic animate-fade-in" style={{ animationDelay: "9000ms" }}>
             <p className="mb-2">(White Rabbit runs off. Alice follows.)</p>
           </div>
+          {/* Image for 'Alice follows' immediately after that narrative */}
+          <div className="flex justify-center mt-4">
+            <img src={aliceFollowsImg} alt="Alice follows the White Rabbit" className="max-w-sm w-full md:w-auto rounded-2xl shadow-2xl" />
+          </div>
 
-          <div className="bg-primary/20 backdrop-blur-sm rounded-2xl p-8 text-white/90 text-center text-xl italic animate-fade-in" style={{ animationDelay: "9500ms" }}>
+          <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-8 text-center text-xl italic animate-fade-in" style={{ animationDelay: "9500ms" }}>
             Without a second thought, curiosity pulled her in…
           </div>
 
-          <div className="bg-primary/20 backdrop-blur-sm rounded-2xl p-6 text-white/90 text-center text-lg italic animate-fade-in" style={{ animationDelay: "10000ms" }}>
+          <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic animate-fade-in" style={{ animationDelay: "10000ms" }}>
             <p>(Alice falls down — the world spins slowly around her…)</p>
+          </div>
+
+          {/* Image for 'Alice falls' immediately after the falling narrative */}
+          <div className="flex justify-center mt-4">
+            <img src={aliceFallsImg} alt="Alice falls down the rabbit hole" className="max-w-sm w-full md:w-auto rounded-2xl shadow-2xl" />
           </div>
 
           {!gameComplete ? (

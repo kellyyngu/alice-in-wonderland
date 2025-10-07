@@ -4,6 +4,9 @@ import { MiniGame } from "../MiniGame";
 import { CharacterImage } from "../CharacterImage";
 import cheshireCatImg from "@/assets/cheshire-cat.png";
 import aliceImg from "@/assets/alice.png";
+import aliceMeetsCheshireImg from "@/assets/alice-meets-cheshire-cat.png";
+import cheshireCatTalkingImg from "@/assets/cheshire-cat-talking.png";
+import cheshireLingeringImg from "@/assets/cheshire-lingering.png";
 import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter4Props {
@@ -87,22 +90,6 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
       className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden with-wallpaper"
       style={{ ["--wallpaper-url" as any]: `url(${wallpaper})` }}
     >
-      {/* Mysterious floating elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(10)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-4xl opacity-20 animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.3}s`,
-            }}
-          >
-            😸
-          </div>
-        ))}
-      </div>
 
       <div className="max-w-4xl mx-auto px-6 z-10">
         <div className="text-center mb-12">
@@ -113,7 +100,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
             The Cheshire Cat
           </h2>
 
-          <div className="bg-secondary/10 backdrop-blur-sm rounded-2xl p-6 text-center text-foreground/80 text-lg italic animate-fade-in mb-8">
+          <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic animate-fade-in mb-8">
             Alice meets the mischievous Cheshire Cat who appears and disappears at will.
           </div>
 
@@ -136,8 +123,8 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
               </div>
             )}
             {grinOnly && (
-              <div className="text-9xl animate-grin">
-                😁
+              <div className="animate-grin">
+                <img src={cheshireLingeringImg} alt="Cheshire grin" className="w-64 h-64 md:w-96 md:h-96 object-contain" />
               </div>
             )}
           </div>
@@ -151,6 +138,10 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
             characterImage={aliceImg}
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
           />
+          {/* Image: Alice meets the Cheshire Cat (placed immediately after Alice's question) */}
+          <div className="flex justify-center mt-4">
+            <img src={aliceMeetsCheshireImg} alt="Alice meets the Cheshire Cat" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+          </div>
           <DialogueBox
             speaker="Cheshire Cat"
             text="That depends on where you want to get to."
@@ -172,6 +163,9 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
             characterImage={cheshireCatImg}
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
           />
+          <div className="flex justify-center mt-4">
+            <img src={cheshireCatTalkingImg} alt="Cheshire Cat talking" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+          </div>
           <DialogueBox 
             speaker="Alice" 
             text="You're not very helpful." 
@@ -187,7 +181,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
           />
 
-          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/85 italic animate-fade-in mt-12">
+          <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center italic animate-fade-in mt-12">
             (The cat's grin lingers after the rest fades away.)
             <div className="mt-4 text-sm">(Click the cat to see the grin effect!)</div>
           </div>
@@ -204,7 +198,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
           )}
 
           {gameComplete && (
-            <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-white text-center animate-fade-in">
+            <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center animate-fade-in">
               <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
             </div>
           )}
