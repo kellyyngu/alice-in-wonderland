@@ -17,10 +17,27 @@ interface FallingObject {
 
 export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps) => {
   const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(() => {
+    try {
+      const raw = localStorage.getItem(`aiw-mini-attempts-${chapterNumber}`);
+      return raw ? parseInt(raw, 10) : 0;
+    } catch (e) {
+      return 0;
+    }
+  });
+  const [bestScore, setBestScore] = useState(() => {
+    try {
+      const raw = localStorage.getItem(`aiw-mini-best-${chapterNumber}`);
+      return raw ? parseInt(raw, 10) : 0;
+    } catch (e) {
+      return 0;
+    }
+  });
   const [playerX, setPlayerX] = useState(50);
   const [objects, setObjects] = useState<FallingObject[]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const objectIdRef = useRef(0);
   const gameLoopRef = useRef<number>();
@@ -41,6 +58,12 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
   const FALL_SPEED_VARIANCE = 0.45; // added random range
   const SPAWN_STEP = 0.5; // horizontal snap step in percent (smaller -> finer placement)
 
+  // Allow runtime tweaks while debugging (kept in state so the debug panel can control them)
+  const [dbgTarget, setDbgTarget] = useState(TARGET_SCORE);
+  const [dbgSpawnStep, setDbgSpawnStep] = useState(SPAWN_STEP);
+  const [dbgFallMin, setDbgFallMin] = useState(FALL_SPEED_MIN);
+  const [dbgFallVar, setDbgFallVar] = useState(FALL_SPEED_VARIANCE);
+
   // Reset the game state for retrying the same chapter (no full reload)
   const resetGame = () => {
     // clear objects, reset refs and state
@@ -54,6 +77,16 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
     setPlayerX(50);
   };
 
+  // Persist attempts and best score whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(`aiw-mini-attempts-${chapterNumber}`, String(attempts));
+      localStorage.setItem(`aiw-mini-best-${chapterNumber}`, String(bestScore));
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [attempts, bestScore, chapterNumber]);
+
   useEffect(() => {
     // Spawn objects (slower falling and slightly less frequent)
     const spawnInterval = setInterval(() => {
@@ -61,8 +94,8 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
         setObjects((prev) => {
           // compute fine-grained spawn X snapped to SPAWN_STEP
           const rawX = Math.random() * (GAME_WIDTH - 10) + 5;
-          const snappedX = Math.round(rawX / SPAWN_STEP) * SPAWN_STEP;
-          const speed = FALL_SPEED_MIN + Math.random() * FALL_SPEED_VARIANCE;
+          const snappedX = Math.round(rawX / dbgSpawnStep) * dbgSpawnStep;
+          const speed = dbgFallMin + Math.random() * dbgFallVar;
 
           return [
             ...prev,
@@ -130,7 +163,7 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
               if (obj.type === "heart") {
                 setScore((s) => {
                   const newScore = s + 1;
-                  if (newScore >= TARGET_SCORE) {
+                  if (newScore >= dbgTarget) {
                     setGameWon(true);
                   }
                   return newScore;
@@ -158,6 +191,22 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
       }
     };
   }, [gameOver, gameWon, playerX]);
+
+  // When gameOver set, increment attempts and update bestScore
+  useEffect(() => {
+    if (gameOver) {
+      setAttempts((a) => a + 1);
+      setBestScore((b) => Math.max(b, score));
+    }
+  }, [gameOver]);
+
+  // When gameWon set, record attempt and bestScore
+  useEffect(() => {
+    if (gameWon) {
+      setAttempts((a) => a + 1);
+      setBestScore((b) => Math.max(b, score));
+    }
+  }, [gameWon]);
 
   useEffect(() => {
     // Only use arrow keys for controls. Track keydown and keyup for smooth continuous movement.
@@ -203,6 +252,9 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
           </p>
           <div className="text-3xl font-bold text-accent">
             Score: {score} / {TARGET_SCORE}
+          </div>
+          <div className="mt-2 text-sm text-white/70">
+            Attempts: {attempts} • Best: {bestScore}
           </div>
         </div>
 
@@ -280,9 +332,42 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
           )}
         </div>
 
-        <p className="text-center text-white/60 mt-4">
-          Use mouse or arrow keys to move ✨
-        </p>
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <p className="text-center text-white/60">
+            Use arrow keys to move ✨
+          </p>
+
+          <button
+            onClick={() => setShowDebug((s) => !s)}
+            className="ml-4 bg-white/10 text-white px-3 py-1 rounded-full text-sm"
+          >
+            {showDebug ? "Hide Debug" : "Show Debug"}
+          </button>
+        </div>
+
+        {showDebug && (
+          <div className="max-w-2xl mx-auto mt-4 bg-white/5 p-4 rounded-lg text-white text-sm">
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2">
+                Target:
+                <input type="number" value={dbgTarget} min={1} onChange={(e) => setDbgTarget(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
+              </label>
+              <label className="flex items-center gap-2">
+                Spawn step:
+                <input type="number" step="0.1" value={dbgSpawnStep} onChange={(e) => setDbgSpawnStep(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
+              </label>
+              <label className="flex items-center gap-2">
+                Fall min:
+                <input type="number" step="0.05" value={dbgFallMin} onChange={(e) => setDbgFallMin(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
+              </label>
+              <label className="flex items-center gap-2">
+                Fall var:
+                <input type="number" step="0.05" value={dbgFallVar} onChange={(e) => setDbgFallVar(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
+              </label>
+              <button onClick={() => { setDbgTarget(TARGET_SCORE); setDbgSpawnStep(SPAWN_STEP); setDbgFallMin(FALL_SPEED_MIN); setDbgFallVar(FALL_SPEED_VARIANCE); }} className="ml-auto bg-white/10 px-3 py-1 rounded">Reset</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,13 +5,15 @@ import { CharacterImage } from "../CharacterImage";
 import madHatterImg from "@/assets/mad-hatter.png";
 import marchHareImg from "@/assets/march-hare.png";
 import aliceImg from "@/assets/alice.png";
+import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter3Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
+  goTo?: (index: number) => void;
 }
 
-export const Chapter3 = ({ isUnlocked = false, onComplete }: Chapter3Props) => {
+export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props) => {
   const [teaCups, setTeaCups] = useState([
     { id: 1, position: 0 },
     { id: 2, position: 1 },
@@ -60,8 +62,17 @@ export const Chapter3 = ({ isUnlocked = false, onComplete }: Chapter3Props) => {
       >
         <div className="text-center space-y-6">
           <div className="text-9xl mb-4">🔒</div>
-          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 3: Locked</h2>
-          <p className="text-xl text-muted-foreground">Complete Chapter 2's mini-game to unlock</p>
+          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 3: The Mad Tea Party (Locked)</h2>
+          <p className="text-xl text-muted-foreground">Chaotic tea, riddles and a curious guest list — a party like no other.</p>
+          <p className="text-lg text-muted-foreground">Complete Chapter 2's mini-game to unlock</p>
+          <div className="mt-6">
+            <button
+              onClick={() => goTo?.(2)}
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:bg-primary/90"
+            >
+              Play Chapter 2 to Unlock
+            </button>
+          </div>
         </div>
       </section>
     );
@@ -70,7 +81,13 @@ export const Chapter3 = ({ isUnlocked = false, onComplete }: Chapter3Props) => {
   return (
     <section
       id="chapter3"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 py-20"
+      className="min-h-screen flex items-center justify-center py-20"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Floating tea & teapot emojis */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -90,10 +107,10 @@ export const Chapter3 = ({ isUnlocked = false, onComplete }: Chapter3Props) => {
       </div>
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
-          <div className="inline-block bg-primary/10 px-6 py-2 rounded-full mb-4">
-            <span className="text-primary font-bold text-sm tracking-wider">CHAPTER 3</span>
+          <div className="inline-block bg-black/50 px-6 py-2 rounded-full mb-4">
+            <span className="text-white font-bold text-sm tracking-wider">CHAPTER 3</span>
           </div>
-          <h2 className="font-serif text-6xl md:text-7xl font-bold text-foreground mb-8">
+          <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">
             The Mad Tea Party
           </h2>
 
@@ -112,7 +129,7 @@ export const Chapter3 = ({ isUnlocked = false, onComplete }: Chapter3Props) => {
             />
           </div>
 
-          <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-6 text-center text-foreground/80 text-lg italic animate-fade-in mb-8">
+          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
             Alice joins the Mad Hatter, March Hare, and Dormouse at a chaotic tea party.
           </div>
         </div>
@@ -205,7 +222,7 @@ export const Chapter3 = ({ isUnlocked = false, onComplete }: Chapter3Props) => {
           )}
 
           {gameComplete && (
-            <div className="bg-accent/20 backdrop-blur-sm rounded-2xl p-6 text-foreground text-center animate-fade-in">
+            <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-white text-center animate-fade-in">
               <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
             </div>
           )}

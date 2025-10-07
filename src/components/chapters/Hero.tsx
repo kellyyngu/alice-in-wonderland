@@ -1,6 +1,11 @@
 import { ArrowDown } from "lucide-react";
+import wallpaper from "@/assets/wallpaper.png";
 
-export const Hero = () => {
+interface HeroProps {
+  onBegin?: () => void;
+}
+
+export const Hero = ({ onBegin }: HeroProps) => {
   const scrollToChapter1 = () => {
     const element = document.getElementById("chapter1");
     if (element) {
@@ -8,10 +13,21 @@ export const Hero = () => {
     }
   };
 
+  const handleBegin = () => {
+    if (onBegin) return onBegin();
+    return scrollToChapter1();
+  };
+
   return (
     <section
       id="hero"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-sky"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.55), rgba(10,6,20,0.25)), url(${wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Floating elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -38,7 +54,7 @@ export const Hero = () => {
           A Curious Interactive Journey
         </p>
         <button
-          onClick={scrollToChapter1}
+          onClick={handleBegin}
           className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/30 transition-all hover:scale-105 shadow-lg border border-white/30 animate-fade-in flex items-center gap-2 mx-auto"
           style={{ animationDelay: "400ms" }}
         >

@@ -40,7 +40,7 @@ export const DialogueBox = ({ speaker, text, delay = 0, characterImage, onSpeaki
   return (
     <div 
       onClick={handleClick}
-      className="bg-card/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-border max-w-2xl mx-auto animate-fade-in cursor-pointer hover:bg-card/95 transition-all"
+      className="bg-black/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/10 max-w-2xl mx-auto animate-fade-in cursor-pointer hover:bg-black/65 transition-all"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex items-center gap-4 mb-4">
@@ -53,10 +53,10 @@ export const DialogueBox = ({ speaker, text, delay = 0, characterImage, onSpeaki
             }`}
           />
         )}
-        <div className="font-serif text-primary font-bold text-xl">{speaker}</div>
+        <div className="font-serif text-white font-bold text-xl">{speaker}</div>
       </div>
-      <p className="text-foreground/90 text-lg leading-relaxed italic">"{text}"</p>
-      <p className="text-xs text-muted-foreground mt-2 text-center">Click to hear dialogue</p>
+      <p className="text-white/90 text-lg leading-relaxed italic">"{text}"</p>
+      <p className="text-xs text-white/70 mt-2 text-center">Click to hear dialogue</p>
     </div>
   );
 };

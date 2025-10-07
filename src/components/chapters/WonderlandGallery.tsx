@@ -45,7 +45,13 @@ export const WonderlandGallery = () => {
   return (
     <section
       id="wonderland-gallery"
-      className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-20 relative overflow-hidden"
+      className="min-h-screen py-20 relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.65), rgba(6,6,12,0.35)), url(/src/assets/wallpaper.png)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -4,13 +4,15 @@ import { MiniGame } from "../MiniGame";
 import { CharacterImage } from "../CharacterImage";
 import cheshireCatImg from "@/assets/cheshire-cat.png";
 import aliceImg from "@/assets/alice.png";
+import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter4Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
+  goTo?: (index: number) => void;
 }
 
-export const Chapter4 = ({ isUnlocked = false, onComplete }: Chapter4Props) => {
+export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props) => {
   const [catVisible, setCatVisible] = useState(true);
   const [grinOnly, setGrinOnly] = useState(false);
   const [showGame, setShowGame] = useState(false);
@@ -63,8 +65,17 @@ export const Chapter4 = ({ isUnlocked = false, onComplete }: Chapter4Props) => {
       >
         <div className="text-center space-y-6">
           <div className="text-9xl mb-4">🔒</div>
-          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 4: Locked</h2>
-          <p className="text-xl text-muted-foreground">Complete Chapter 3's mini-game to unlock</p>
+          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 4: The Cheshire Cat (Locked)</h2>
+          <p className="text-xl text-muted-foreground">A grin in the trees and riddles that bend the mind.</p>
+          <p className="text-lg text-muted-foreground">Complete Chapter 3's mini-game to unlock</p>
+          <div className="mt-6">
+            <button
+              onClick={() => goTo?.(3)}
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:bg-primary/90"
+            >
+              Play Chapter 3 to Unlock
+            </button>
+          </div>
         </div>
       </section>
     );
@@ -73,7 +84,13 @@ export const Chapter4 = ({ isUnlocked = false, onComplete }: Chapter4Props) => {
   return (
     <section
       id="chapter4"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 py-20 relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Mysterious floating elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -94,10 +111,10 @@ export const Chapter4 = ({ isUnlocked = false, onComplete }: Chapter4Props) => {
 
       <div className="max-w-4xl mx-auto px-6 z-10">
         <div className="text-center mb-12">
-          <div className="inline-block bg-secondary/20 px-6 py-2 rounded-full mb-4">
-            <span className="text-secondary font-bold text-sm tracking-wider">CHAPTER 4</span>
+          <div className="inline-block bg-black/50 px-6 py-2 rounded-full mb-4">
+            <span className="text-white font-bold text-sm tracking-wider">CHAPTER 4</span>
           </div>
-          <h2 className="font-serif text-6xl md:text-7xl font-bold text-foreground mb-8">
+          <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">
             The Cheshire Cat
           </h2>
 
@@ -174,7 +191,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete }: Chapter4Props) => {
             onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
           />
 
-          <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 text-center text-muted-foreground italic animate-fade-in mt-12">
+          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/85 italic animate-fade-in mt-12">
             (The cat's grin lingers after the rest fades away.)
             <div className="mt-4 text-sm">(Click the cat to see the grin effect!)</div>
           </div>
@@ -191,7 +208,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete }: Chapter4Props) => {
           )}
 
           {gameComplete && (
-            <div className="bg-accent/20 backdrop-blur-sm rounded-2xl p-6 text-foreground text-center animate-fade-in">
+            <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-white text-center animate-fade-in">
               <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
             </div>
           )}

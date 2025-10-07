@@ -5,13 +5,15 @@ import { MiniGame } from "../MiniGame";
 import { CharacterImage } from "../CharacterImage";
 import whiteRabbitImg from "@/assets/white-rabbit.png";
 import aliceImg from "@/assets/alice.png";
+import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter1Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
+  goTo?: (index: number) => void;
 }
 
-export const Chapter1 = ({ isUnlocked = true, onComplete }: Chapter1Props) => {
+export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props) => {
   const [showGame, setShowGame] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
@@ -55,6 +57,12 @@ export const Chapter1 = ({ isUnlocked = true, onComplete }: Chapter1Props) => {
     <section
       id="chapter1"
       className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-rabbit-hole py-20"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Falling objects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -70,8 +78,8 @@ export const Chapter1 = ({ isUnlocked = true, onComplete }: Chapter1Props) => {
 
       <div className="max-w-4xl mx-auto px-6 z-10">
         <div className="text-center mb-12">
-          <div className="inline-block bg-accent/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
-            <span className="text-accent font-bold text-sm tracking-wider">CHAPTER 1</span>
+          <div className="inline-block bg-black/50 px-6 py-2 rounded-full mb-4">
+            <span className="text-white font-bold text-sm tracking-wider">CHAPTER 1</span>
           </div>
           <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">
             Down the Rabbit Hole
@@ -85,7 +93,7 @@ export const Chapter1 = ({ isUnlocked = true, onComplete }: Chapter1Props) => {
             />
           </div>
 
-          <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-6 text-center text-white/80 text-lg italic animate-fade-in mb-8">
+          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
             Alice sees the White Rabbit rushing by and decides to follow him, leading her to fall down a rabbit hole.
           </div>
         </div>

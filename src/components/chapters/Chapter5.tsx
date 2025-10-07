@@ -4,15 +4,17 @@ import { CharacterImage } from "../CharacterImage";
 import queenOfHeartsImg from "@/assets/queen-of-hearts.png";
 import kingOfHeartsImg from "@/assets/king-of-hearts.png";
 import aliceImg from "@/assets/alice.png";
+import wallpaper from "@/assets/wallpaper.png";
 
 const suits = ["♥️", "♦️", "♣️", "♠️"];
 
 interface Chapter5Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
+  goTo?: (index: number) => void;
 }
 
-export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
+export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props) => {
   const [exploded, setExploded] = useState(false);
   const [awakened, setAwakened] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
     }, 2000);
   };
 
-  
+
   if (!isUnlocked) {
     return (
       <section
@@ -35,8 +37,17 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
       >
         <div className="text-center space-y-6">
           <div className="text-9xl mb-4">🔒</div>
-          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 5: Locked</h2>
-          <p className="text-xl text-muted-foreground">Complete Chapter 4's mini-game to unlock</p>
+          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 5: The Queen's Court (Locked)</h2>
+          <p className="text-xl text-muted-foreground">Chaos in the garden and a court unlike any other.</p>
+          <p className="text-lg text-muted-foreground">Complete Chapter 4's mini-game to unlock</p>
+          <div className="mt-6">
+            <button
+              onClick={() => goTo?.(4)}
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:bg-primary/90"
+            >
+              Play Chapter 4 to Unlock
+            </button>
+          </div>
         </div>
       </section>
     );
@@ -45,7 +56,13 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
   return (
     <section
       id="chapter5"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-100 via-rose-100 to-pink-100 py-20 relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Floating roses */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -90,10 +107,10 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
         {!awakened ? (
           <>
             <div className="text-center mb-12">
-              <div className="inline-block bg-destructive/20 px-6 py-2 rounded-full mb-4">
-                <span className="text-destructive font-bold text-sm tracking-wider">CHAPTER 5</span>
+              <div className="inline-block bg-black/50 px-6 py-2 rounded-full mb-4">
+                <span className="text-white font-bold text-sm tracking-wider">CHAPTER 5</span>
               </div>
-              <h2 className="font-serif text-6xl md:text-7xl font-bold text-foreground mb-8">
+              <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">
                 The Queen's Court
               </h2>
               
@@ -112,7 +129,7 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
                 />
               </div>
 
-              <div className="bg-destructive/10 backdrop-blur-sm rounded-2xl p-6 text-center text-foreground/80 text-lg italic animate-fade-in mb-8">
+              <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
                 Alice enters the Queen of Hearts' garden, where chaos reigns.
               </div>
             </div>
@@ -179,6 +196,7 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
             </div>
           </>
         ) : (
+          // Awakening moved to a dedicated page shown after Chapter 5 completes.
           <div className="text-center animate-fade-in">
             <div className="bg-card/90 backdrop-blur-sm rounded-3xl p-12 shadow-2xl max-w-2xl mx-auto">
               <div className="text-7xl mb-6">☀️</div>
@@ -189,18 +207,15 @@ export const Chapter5 = ({ isUnlocked = false, onComplete }: Chapter5Props) => {
                 And with that, Alice awoke, as if from a very curious dream...
               </p>
               <div className="text-6xl mb-8 animate-float">👧</div>
-              
-              <button
-                onClick={() => {
-                  const gallery = document.getElementById("wonderland-gallery");
-                  if (gallery) {
-                    gallery.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                className="bg-primary text-primary-foreground px-12 py-4 rounded-full text-xl font-bold hover:bg-primary/90 transition-all hover:scale-105 shadow-lg"
-              >
-                Enter Wonderland Gallery ✨
-              </button>
+
+              <div className="mt-6">
+                <button
+                  onClick={() => onComplete?.()}
+                  className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:bg-primary/90"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           </div>
         )}

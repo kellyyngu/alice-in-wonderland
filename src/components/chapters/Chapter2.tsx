@@ -3,13 +3,15 @@ import { DialogueBox } from "../DialogueBox";
 import { MiniGame } from "../MiniGame";
 import drinkMeImg from "@/assets/drink-me-bottle.png";
 import aliceImg from "@/assets/alice.png";
+import wallpaper from "@/assets/wallpaper.png";
 
 interface Chapter2Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
+  goTo?: (index: number) => void;
 }
 
-export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
+export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props) => {
   const [aliceSize, setAliceSize] = useState<"normal" | "small" | "large">("normal");
   const [showGame, setShowGame] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
@@ -43,8 +45,17 @@ export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
       >
         <div className="text-center space-y-6">
           <div className="text-9xl mb-4">🔒</div>
-          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 2: Locked</h2>
-          <p className="text-xl text-muted-foreground">Complete Chapter 1's mini-game to unlock</p>
+          <h2 className="font-serif text-5xl text-foreground mb-4">Chapter 2: Drink Me, Eat Me (Locked)</h2>
+          <p className="text-xl text-muted-foreground">A tiny door, a table, a bottle and a cake. What could go wrong?</p>
+          <p className="text-lg text-muted-foreground">Complete Chapter 1's mini-game to unlock</p>
+          <div className="mt-6">
+            <button
+              onClick={() => goTo?.(1)}
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:bg-primary/90"
+            >
+              Play Chapter 1 to Unlock
+            </button>
+          </div>
         </div>
       </section>
     );
@@ -53,7 +64,13 @@ export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
   return (
     <section
       id="chapter2"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wonderland-cream to-muted py-20"
+      className="min-h-screen flex items-center justify-center py-20"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Floating potions & cakes */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -73,10 +90,10 @@ export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
       </div>
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
-          <div className="inline-block bg-primary/10 px-6 py-2 rounded-full mb-4">
-            <span className="text-primary font-bold text-sm tracking-wider">CHAPTER 2</span>
+          <div className="inline-block bg-black/50 px-6 py-2 rounded-full mb-4">
+            <span className="text-white font-bold text-sm tracking-wider">CHAPTER 2</span>
           </div>
-          <h2 className="font-serif text-6xl md:text-7xl font-bold text-foreground mb-8">
+          <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">
             Drink Me, Eat Me
           </h2>
 
@@ -90,7 +107,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-6 text-center text-foreground/80 text-lg italic animate-fade-in mb-8">
+          <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-center text-white/90 text-lg italic animate-fade-in mb-8">
             Alice finds a table with a bottle labeled "Drink Me" and a cake labeled "Eat Me."
           </div>
 
@@ -137,9 +154,9 @@ export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
               }}
               className="group relative"
             >
-              <div className="bg-secondary/20 hover:bg-secondary/30 backdrop-blur-sm rounded-2xl p-8 transition-all hover:scale-105 border border-secondary/30">
+              <div className="bg-black/55 hover:bg-black/60 backdrop-blur-md rounded-2xl p-8 transition-all hover:scale-105 border border-white/10">
                 <div className="text-6xl mb-3">🧪</div>
-                <div className="font-serif text-xl font-bold text-secondary">Drink Me</div>
+                <div className="font-serif text-xl font-bold text-white">Drink Me</div>
               </div>
             </button>
 
@@ -161,9 +178,9 @@ export const Chapter2 = ({ isUnlocked = false, onComplete }: Chapter2Props) => {
               }}
               className="group relative"
             >
-              <div className="bg-accent/20 hover:bg-accent/30 backdrop-blur-sm rounded-2xl p-8 transition-all hover:scale-105 border border-accent/30">
+              <div className="bg-black/55 hover:bg-black/60 backdrop-blur-md rounded-2xl p-8 transition-all hover:scale-105 border border-white/10">
                 <div className="text-6xl mb-3">🧁</div>
-                <div className="font-serif text-xl font-bold text-accent">Eat Me</div>
+                <div className="font-serif text-xl font-bold text-white">Eat Me</div>
               </div>
             </button>
           </div>
