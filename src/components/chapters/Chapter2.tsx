@@ -64,13 +64,8 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
   return (
     <section
       id="chapter2"
-      className="min-h-screen flex items-center justify-center py-20"
-      style={{
-        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
+      className="min-h-screen flex items-center justify-center py-20 with-wallpaper"
+      style={{ ["--wallpaper-url" as any]: `url(${wallpaper})` }}
     >
       {/* Floating potions & cakes */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

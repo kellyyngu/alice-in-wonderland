@@ -56,13 +56,8 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
   return (
     <section
       id="chapter5"
-      className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
+      className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden with-wallpaper"
+      style={{ ["--wallpaper-url" as any]: `url(${wallpaper})` }}
     >
       {/* Floating roses */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

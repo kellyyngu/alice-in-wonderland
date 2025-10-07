@@ -56,12 +56,10 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
   return (
     <section
       id="chapter1"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-rabbit-hole py-20"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-rabbit-hole py-20 with-wallpaper"
       style={{
-        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(${wallpaper})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        // set wallpaper via CSS variable so the ::before pseudo-element can blur it
+        ["--wallpaper-url" as any]: `url(${wallpaper})`,
       }}
     >
       {/* Falling objects */}

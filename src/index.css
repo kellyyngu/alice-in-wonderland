@@ -86,3 +86,37 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Wallpaper blur helper
+   Usage: add class `with-wallpaper` to a block-level section and set
+   --wallpaper-url: url('/src/assets/wallpaper.png') inline or via CSS. */
+.with-wallpaper {
+  position: relative;
+  overflow: hidden;
+}
+.with-wallpaper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--wallpaper-url, url('/src/assets/wallpaper.png'));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(6px) brightness(0.85) saturate(0.95);
+  transform: scale(1.04);
+  z-index: 0;
+  will-change: transform, filter;
+}
+.with-wallpaper::after {
+  /* subtle dark gradient overlay for contrast */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15));
+  z-index: 1;
+}
+.with-wallpaper > * {
+  position: relative;
+  z-index: 10;
+}
+

@@ -6,12 +6,15 @@ interface AwakeningProps {
 
 export const Awakening = ({ goTo }: AwakeningProps) => {
   return (
-    <section className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden" style={{
-      backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(/src/assets/wallpaper.png)`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-    }}>
+    <section
+      className="min-h-screen flex items-center justify-center py-20 relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15)), url(/src/assets/wallpaper.png)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       <div className="max-w-4xl mx-auto px-6 z-10">
         <div className="text-center animate-fade-in">
           <div className="bg-black/65 backdrop-blur-md rounded-3xl p-12 shadow-2xl max-w-2xl mx-auto border border-white/10">
