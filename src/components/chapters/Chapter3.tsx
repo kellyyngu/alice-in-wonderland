@@ -114,13 +114,13 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
               src={madHatterImg}
               alt="Mad Hatter"
               isSpeaking={currentSpeaker === "Mad Hatter"}
-              className="max-w-[200px]"
+              className="max-w-[200px] animate-float"
             />
             <CharacterImage
               src={marchHareImg}
               alt="March Hare"
               isSpeaking={currentSpeaker === "March Hare"}
-              className="max-w-[200px]"
+              className="max-w-[200px] animate-float"
             />
           </div>
 

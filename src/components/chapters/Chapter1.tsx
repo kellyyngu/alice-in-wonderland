@@ -83,11 +83,12 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
             Down the Rabbit Hole
           </h2>
           
-          <div className="mb-8">
+          <div className="mb-8 flex justify-center">
             <CharacterImage
               src={whiteRabbitImg}
               alt="White Rabbit"
               isSpeaking={currentSpeaker === "White Rabbit"}
+              className="animate-float"
             />
           </div>
 

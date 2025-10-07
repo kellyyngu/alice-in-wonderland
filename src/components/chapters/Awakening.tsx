@@ -1,4 +1,6 @@
 import React from "react";
+import { CharacterImage } from "../CharacterImage";
+import aliceImg from "@/assets/alice.png";
 
 interface AwakeningProps {
   goTo?: (index: number) => void;
@@ -23,7 +25,7 @@ export const Awakening = ({ goTo }: AwakeningProps) => {
             <p className="text-2xl text-muted-foreground italic leading-relaxed mb-8">
               And with that, Alice awoke, as if from a very curious dream...
             </p>
-            <div className="text-6xl mb-8 animate-float">👧</div>
+            <CharacterImage src={aliceImg} alt="Alice" className="mx-auto w-20 mb-8 animate-float" />
 
             <button
               onClick={() => goTo?.(7)}

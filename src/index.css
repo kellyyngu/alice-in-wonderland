@@ -93,27 +93,34 @@ All colors MUST be HSL.
 .with-wallpaper {
   position: relative;
   overflow: hidden;
+  /* ensure the section covers the viewport so the wallpaper fills the screen */
+  min-height: 100vh;
 }
 .with-wallpaper::before {
   content: "";
-  position: absolute;
+  /* make the wallpaper cover the whole viewport (not only the section bounds)
+     so there are no gaps when the section has extra padding. Fixed keeps it
+     perfectly centered and blurred under the UI. */
+  position: fixed;
   inset: 0;
   background-image: var(--wallpaper-url, url('/src/assets/wallpaper.png'));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   filter: blur(6px) brightness(0.85) saturate(0.95);
-  transform: scale(1.04);
+  transform: scale(1.06);
   z-index: 0;
   will-change: transform, filter;
+  pointer-events: none;
 }
 .with-wallpaper::after {
   /* subtle dark gradient overlay for contrast */
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: linear-gradient(rgba(6,6,12,0.45), rgba(6,6,12,0.15));
   z-index: 1;
+  pointer-events: none;
 }
 .with-wallpaper > * {
   position: relative;
@@ -138,5 +145,4 @@ All colors MUST be HSL.
   box-shadow: 0 18px 40px -12px rgba(2,6,23,0.55), 0 6px 18px rgba(99,102,241,0.06);
   border-radius: 12px;
 }
-
 

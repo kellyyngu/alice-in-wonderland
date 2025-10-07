@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Heart, X } from "lucide-react";
+import wallpaper from "@/assets/wallpaper.png";
 
 interface MiniGameProps {
   onSuccess: () => void;
@@ -37,7 +38,6 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
   const [objects, setObjects] = useState<FallingObject[]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
-  const [showDebug, setShowDebug] = useState(false);
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const objectIdRef = useRef(0);
   const gameLoopRef = useRef<number>();
@@ -57,12 +57,6 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
   const FALL_SPEED_MIN = 0.25; // percent per frame - minimum fall speed
   const FALL_SPEED_VARIANCE = 0.45; // added random range
   const SPAWN_STEP = 0.5; // horizontal snap step in percent (smaller -> finer placement)
-
-  // Allow runtime tweaks while debugging (kept in state so the debug panel can control them)
-  const [dbgTarget, setDbgTarget] = useState(TARGET_SCORE);
-  const [dbgSpawnStep, setDbgSpawnStep] = useState(SPAWN_STEP);
-  const [dbgFallMin, setDbgFallMin] = useState(FALL_SPEED_MIN);
-  const [dbgFallVar, setDbgFallVar] = useState(FALL_SPEED_VARIANCE);
 
   // Reset the game state for retrying the same chapter (no full reload)
   const resetGame = () => {
@@ -94,8 +88,8 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
         setObjects((prev) => {
           // compute fine-grained spawn X snapped to SPAWN_STEP
           const rawX = Math.random() * (GAME_WIDTH - 10) + 5;
-          const snappedX = Math.round(rawX / dbgSpawnStep) * dbgSpawnStep;
-          const speed = dbgFallMin + Math.random() * dbgFallVar;
+          const snappedX = Math.round(rawX / SPAWN_STEP) * SPAWN_STEP;
+          const speed = FALL_SPEED_MIN + Math.random() * FALL_SPEED_VARIANCE;
 
           return [
             ...prev,
@@ -163,7 +157,7 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
               if (obj.type === "heart") {
                 setScore((s) => {
                   const newScore = s + 1;
-                  if (newScore >= dbgTarget) {
+                  if (newScore >= TARGET_SCORE) {
                     setGameWon(true);
                   }
                   return newScore;
@@ -241,7 +235,7 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
   }, [gameOver, gameWon]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-purple-900 via-pink-900 to-red-900 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center with-wallpaper" style={{ ["--wallpaper-url" as any]: `url(${wallpaper})` }}>
       <div className="max-w-2xl w-full mx-auto px-6">
         <div className="text-center mb-8">
           <h2 className="font-serif text-5xl font-bold text-white mb-4">
@@ -333,41 +327,8 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
         </div>
 
         <div className="flex items-center justify-center gap-4 mt-4">
-          <p className="text-center text-white/60">
-            Use arrow keys to move ✨
-          </p>
-
-          <button
-            onClick={() => setShowDebug((s) => !s)}
-            className="ml-4 bg-white/10 text-white px-3 py-1 rounded-full text-sm"
-          >
-            {showDebug ? "Hide Debug" : "Show Debug"}
-          </button>
+          <p className="text-center text-white/60">Use arrow keys to move ✨</p>
         </div>
-
-        {showDebug && (
-          <div className="max-w-2xl mx-auto mt-4 bg-white/5 p-4 rounded-lg text-white text-sm">
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2">
-                Target:
-                <input type="number" value={dbgTarget} min={1} onChange={(e) => setDbgTarget(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
-              </label>
-              <label className="flex items-center gap-2">
-                Spawn step:
-                <input type="number" step="0.1" value={dbgSpawnStep} onChange={(e) => setDbgSpawnStep(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
-              </label>
-              <label className="flex items-center gap-2">
-                Fall min:
-                <input type="number" step="0.05" value={dbgFallMin} onChange={(e) => setDbgFallMin(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
-              </label>
-              <label className="flex items-center gap-2">
-                Fall var:
-                <input type="number" step="0.05" value={dbgFallVar} onChange={(e) => setDbgFallVar(Number(e.target.value))} className="w-20 text-black ml-2 p-1 rounded" />
-              </label>
-              <button onClick={() => { setDbgTarget(TARGET_SCORE); setDbgSpawnStep(SPAWN_STEP); setDbgFallMin(FALL_SPEED_MIN); setDbgFallVar(FALL_SPEED_VARIANCE); }} className="ml-auto bg-white/10 px-3 py-1 rounded">Reset</button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

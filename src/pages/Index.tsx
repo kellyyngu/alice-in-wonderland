@@ -61,9 +61,8 @@ const Index = () => {
     }
   }, [unlockedChapters, activeIndex]);
 
-  // Apply a brief arrival animation to the newly-rendered section when activeIndex changes
+  // Ensure the newly-rendered section's top (chapter title) is visible when navigating
   useEffect(() => {
-    // map activeIndex to element id used in sections
     const idMap: Record<number, string> = {
       0: 'hero',
       1: 'chapter1',
@@ -80,40 +79,29 @@ const Index = () => {
     const el = document.getElementById(id);
     if (!el) return;
 
-    // Scroll the section to the top of the viewport (account for fixed header)
+    // Detect header height (common header selectors), fall back to 80px
     const header = document.querySelector('header, .chapter-nav, .site-header, #top');
     const headerHeight = header ? (header as HTMLElement).getBoundingClientRect().height : 80;
+
     const rect = el.getBoundingClientRect();
     const absoluteTop = window.scrollY + rect.top;
     const target = Math.max(0, absoluteTop - headerHeight - 12);
-    // Smoothly bring the section to view so the chapter title is visible at the top
+
+    // Smooth scroll so the chapter title is visible at the top (no animation applied)
     window.scrollTo({ top: target, behavior: 'smooth' });
 
-    // after scrolling, add the arrive animation and focus (preventScroll true avoids jumping again)
-    const afterScroll = () => {
-      el.classList.add('arrive-target');
+    // Focus the section for keyboard/screen-reader users after scrolling starts
+    const focusTimeout = setTimeout(() => {
       try {
         (el as HTMLElement).setAttribute('tabindex', '-1');
         (el as HTMLElement).focus({ preventScroll: true });
       } catch (e) {}
-    };
+    }, 250);
 
-    // allow a short delay to let smooth scroll start before animating/focusing
-    const startDelay = 80;
-    const startTimeout = setTimeout(afterScroll, startDelay);
-
-    const cleanup = () => {
-      el.classList.remove('arrive-target');
-      el.removeAttribute('tabindex');
-    };
-
-    const t = setTimeout(cleanup, 900);
-    return () => {
-      clearTimeout(startTimeout);
-      clearTimeout(t);
-      cleanup();
-    };
+    return () => clearTimeout(focusTimeout);
   }, [activeIndex]);
+
+  // arrival animation removed — no side-effects on activeIndex change
 
   return (
     <div className="relative">

@@ -114,13 +114,13 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                   src={queenOfHeartsImg}
                   alt="Queen of Hearts"
                   isSpeaking={currentSpeaker === "Queen of Hearts"}
-                  className="max-w-[200px]"
+                    className="max-w-[200px] animate-float"
                 />
                 <CharacterImage
                   src={kingOfHeartsImg}
                   alt="King of Hearts"
                   isSpeaking={currentSpeaker === "King"}
-                  className="max-w-[200px]"
+                    className="max-w-[200px] animate-float"
                 />
               </div>
 
@@ -201,7 +201,9 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
               <p className="text-2xl text-muted-foreground italic leading-relaxed mb-8">
                 And with that, Alice awoke, as if from a very curious dream...
               </p>
-              <div className="text-6xl mb-8 animate-float">👧</div>
+              <div className="mb-8 animate-float">
+                <CharacterImage src={aliceImg} alt="Alice" className="mx-auto w-20" />
+              </div>
 
               <div className="mt-6">
                 <button

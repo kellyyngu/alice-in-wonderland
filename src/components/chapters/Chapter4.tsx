@@ -131,6 +131,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
                   src={cheshireCatImg}
                   alt="Cheshire Cat"
                   isSpeaking={currentSpeaker === "Cheshire Cat"}
+                  className="animate-float"
                 />
               </div>
             )}

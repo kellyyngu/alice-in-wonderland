@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { CharacterImage } from "./CharacterImage";
+
 interface DialogueBoxProps {
   speaker: string;
   text: string;
@@ -43,20 +45,14 @@ export const DialogueBox = ({ speaker, text, delay = 0, characterImage, onSpeaki
       className="bg-black/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/10 max-w-2xl mx-auto animate-fade-in cursor-pointer hover:bg-black/65 transition-all"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-4 mb-4 justify-start">
         {characterImage && (
-          <img 
-            src={characterImage} 
-            alt={speaker}
-            className={`w-16 h-16 object-cover rounded-full border-2 border-primary transition-transform ${
-              isSpeaking ? 'animate-shake' : ''
-            }`}
-          />
+          <CharacterImage src={characterImage} alt={speaker} className={`w-16 h-16 rounded-full border-2 border-primary mx-0 mr-4 flex-shrink-0`} isSpeaking={isSpeaking} />
         )}
         <div className="font-serif text-white font-bold text-xl">{speaker}</div>
       </div>
-      <p className="text-white/90 text-lg leading-relaxed italic">"{text}"</p>
-      <p className="text-xs text-white/70 mt-2 text-center">Click to hear dialogue</p>
+  <p className="text-white/90 text-lg leading-relaxed italic text-left">"{text}"</p>
+  <p className="text-xs text-white/70 mt-2 text-left">Click to hear dialogue</p>
     </div>
   );
 };

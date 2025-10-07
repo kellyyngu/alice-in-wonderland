@@ -10,7 +10,7 @@ export const CharacterImage = ({ src, alt, isSpeaking, className = "" }: Charact
     <img
       src={src}
       alt={alt}
-      className={`max-w-xs mx-auto drop-shadow-2xl ${isSpeaking ? "animate-shake" : ""} ${className}`}
+      className={`max-w-xs drop-shadow-2xl ${isSpeaking ? "animate-shake" : ""} ${className}`}
     />
   );
 };
