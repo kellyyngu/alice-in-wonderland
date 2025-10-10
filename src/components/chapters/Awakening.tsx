@@ -22,7 +22,7 @@ export const Awakening = ({ goTo }: AwakeningProps) => {
           <div className="bg-black/65 backdrop-blur-md rounded-3xl p-12 shadow-2xl max-w-2xl mx-auto border border-white/10">
             <div className="text-7xl mb-6">☀️</div>
             <h3 className="font-serif text-5xl font-bold text-white mb-6">A Curious Dream</h3>
-            <p className="text-2xl text-muted-foreground italic leading-relaxed mb-8">
+            <p className="text-2xl text-white italic leading-relaxed mb-8">
               And with that, Alice awoke, as if from a very curious dream...
             </p>
             <CharacterImage src={aliceImg} alt="Alice" className="mx-auto w-20 mb-8 animate-float" />

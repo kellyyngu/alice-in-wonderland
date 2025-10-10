@@ -68,3 +68,36 @@ npm run preview
 
 ## Game & UX notes
 - Mini-games use keyboard arrow keys for controls and are driven by a requestAnimationFrame loop for smooth movement.
+
+## AI ChatBot (optional)
+
+This project includes an optional server that provides an AI Chat endpoint using langchain + OpenAI. The frontend `Chatbot` component calls this endpoint to answer user questions about the site.
+
+Setup (server):
+
+1. Create `server/.env` from `.env.example` and set `OPENAI_API_KEY`.
+2. Install server deps and run:
+
+```powershell
+Set-Location server
+npm install
+npm run dev
+```
+
+By default the server listens on port 8787. The frontend reads `VITE_CHAT_ENDPOINT` (dev: http://localhost:8787) to call the `/chat` endpoint.
+
+To enable on the frontend, import and mount the `Chatbot` component where you want it (for example in `App.tsx`):
+
+```tsx
+import Chatbot from './components/Chatbot';
+
+function App(){
+	return (
+		<>
+			{/* ...existing app... */}
+			<Chatbot />
+		</>
+	)
+}
+```
+
