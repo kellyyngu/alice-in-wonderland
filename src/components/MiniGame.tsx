@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Heart, X } from "lucide-react";
 import wallpaper from "@/assets/wallpaper.png";
+import minigameMusic from "@/assets/minigame_music.mp3";
+import heartSound from "@/assets/heart.mp3";
 
 interface MiniGameProps {
   onSuccess: () => void;
@@ -49,6 +51,7 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
   const keysRef = useRef({ left: false, right: false });
   const playerXRef = useRef(50);
   const velocityRef = useRef(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Gameplay tuning
   const TARGET_SCORE = 4;
@@ -84,13 +87,40 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
     }
   }, [attempts, bestScore, chapterNumber]);
 
+  // Background music control
+  useEffect(() => {
+    // Initialize audio on component mount
+    if (!audioRef.current) {
+      audioRef.current = new Audio(minigameMusic);
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.4; // Set volume to 40% so it doesn't overpower voice lines
+    }
+
+    const audio = audioRef.current;
+
+    // Play music when game starts (not in pre-start mode)
+    if (!preStart && !gameOver && !gameWon) {
+      audio.play().catch(err => console.error('Error playing minigame music:', err));
+    } else {
+      // Pause and reset when in pre-start, game over, or won
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    // Cleanup: stop music when component unmounts
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [preStart, gameOver, gameWon]);
+
   // Spawner: respects preStart and increases spade frequency by chapter/difficulty
   useEffect(() => {
-  const chapterMultiplier = 1 + Math.max(0, chapterNumber - 1) * 0.2;
-  // Extra difficulty boost for early chapters (1-3): faster spawns and faster falls
-  const earlyBoost = chapterNumber <= 3 ? 0.35 : 0;
-  const earlySpawnPenalty = chapterNumber <= 3 ? 200 : 0; // ms faster spawns for ch 1-3
-  const spawnMs = Math.max(250, Math.round(BASE_SPAWN_INTERVAL - (chapterNumber - 1) * 150 - difficulty * 80 - earlySpawnPenalty));
+    const chapterMultiplier = 1 + Math.max(0, chapterNumber - 1) * 0.2;
+    // Extra difficulty boost for early chapters (1-3): faster spawns and faster falls
+    const earlyBoost = chapterNumber <= 3 ? 0.35 : 0;
+    const earlySpawnPenalty = chapterNumber <= 3 ? 200 : 0; // ms faster spawns for ch 1-3
+    const spawnMs = Math.max(250, Math.round(BASE_SPAWN_INTERVAL - (chapterNumber - 1) * 150 - difficulty * 80 - earlySpawnPenalty));
 
     const id = setInterval(() => {
       if (preStart || gameOver || gameWon) return;
@@ -98,11 +128,11 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
       setObjects((prev) => {
         const rawX = Math.random() * (GAME_WIDTH - 10) + 5;
         const snappedX = Math.round(rawX / SPAWN_STEP) * SPAWN_STEP;
-  const speedBase = FALL_SPEED_MIN + Math.random() * FALL_SPEED_VARIANCE;
-  // apply difficulty ramp, chapter multiplier and early-chapter boost to speed
-  const speed = speedBase * (1 + (difficulty * 0.15) + (chapterMultiplier - 1) + earlyBoost);
-  // lower heart chance for earlier chapters to increase spade frequency; clamp to a reasonable minimum
-  const heartChance = Math.max(0.15, HEART_CHANCE_BASE - (chapterNumber - 1) * 0.08 - difficulty * 0.03 - (chapterNumber <= 3 ? 0.18 : 0));
+        const speedBase = FALL_SPEED_MIN + Math.random() * FALL_SPEED_VARIANCE;
+        // apply difficulty ramp, chapter multiplier and early-chapter boost to speed
+        const speed = speedBase * (1 + (difficulty * 0.15) + (chapterMultiplier - 1) + earlyBoost);
+        // lower heart chance for earlier chapters to increase spade frequency; clamp to a reasonable minimum
+        const heartChance = Math.max(0.15, HEART_CHANCE_BASE - (chapterNumber - 1) * 0.08 - difficulty * 0.03 - (chapterNumber <= 3 ? 0.18 : 0));
 
         return [
           ...prev,
@@ -146,6 +176,11 @@ export const MiniGame = ({ onSuccess, onFailure, chapterNumber }: MiniGameProps)
             const isColliding = newY > 85 && newY < 95 && Math.abs(obj.x - playerXRef.current) < PLAYER_SIZE;
             if (isColliding) {
               if (obj.type === "heart") {
+                // Play heart sound effect
+                const heartAudio = new Audio(heartSound);
+                heartAudio.volume = 0.5; // Set volume to 50% so it doesn't overpower background music
+                heartAudio.play().catch(err => console.error('Error playing heart sound:', err));
+
                 setScore((s) => {
                   const newScore = s + 1;
                   if (newScore >= TARGET_SCORE) setGameWon(true);

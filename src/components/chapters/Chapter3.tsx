@@ -10,6 +10,14 @@ import teaPartyImg from "@/assets/the-mad-tea-party.png";
 import dormouseAsleepImg from "@/assets/dormouse-asleep.png";
 import wallpaper from "@/assets/wallpaper.png";
 
+// Voice lines
+import c3_no_room from "@/assets/voices/c3/c3_no_room.mp3";
+import c3_plenty_of_space from "@/assets/voices/c3/c3_plenty_of_space.m4a";
+import c3_have_some_tea from "@/assets/voices/c3/c3_have_some_tea.mp3";
+import c3_tea_elsewhere from "@/assets/voices/c3/c3_tea_elsewhere.m4a";
+import c3_time_behaves from "@/assets/voices/c3/c3_time_behaves.mp3";
+import c3_lunch from "@/assets/voices/c3/c3_lunch.m4a";
+
 interface Chapter3Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
@@ -27,13 +35,22 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const [currentScene, setCurrentScene] = useState(0);
   const [clickMode, setClickMode] = useState(false); // Scroll mode is default
-  
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
+
   const totalScenes = 10; // Total number of scenes in this chapter
-  
+
   const nextScene = () => {
+    // Don't advance if audio is playing in click mode
+    if (clickMode && isAudioPlaying) {
+      return;
+    }
     if (currentScene < totalScenes - 1) {
       setCurrentScene(prev => prev + 1);
     }
+  };
+
+  const handleSpeakingChange = (speaking: boolean) => {
+    setIsAudioPlaying(speaking);
   };
 
   const shuffleCups = () => {
@@ -125,24 +142,22 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
           {/* Mode Toggle */}
           <div className="mb-6 flex justify-center gap-4">
             <button
-              onClick={() => setClickMode(true)}
-              className={`px-4 py-2 rounded-full transition-all ${
-                clickMode 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-              }`}
+              onClick={() => setClickMode(false)}
+              className={`px-4 py-2 rounded-full transition-all ${!clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
             >
-              📖 Story Mode
+              � Scroll Mode
             </button>
             <button
-              onClick={() => setClickMode(false)}
-              className={`px-4 py-2 rounded-full transition-all ${
-                !clickMode 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-              }`}
+              onClick={() => setClickMode(true)}
+              className={`px-4 py-2 rounded-full transition-all ${clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
             >
-              📜 Scroll Mode
+              � Story Mode
             </button>
           </div>
 
@@ -176,19 +191,27 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
             {/* Scene 0: Mad Hatter - No room */}
             {currentScene === 0 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="Mad Hatter" 
-                  text="No room! No room!" 
+                <DialogueBox
+                  speaker="Mad Hatter"
+                  text="No room! No room!"
                   delay={0}
                   characterImage={madHatterImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Mad Hatter" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c3_no_room}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 1: Mad Hatter No Room image */}
             {currentScene === 1 && (
               <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
@@ -198,55 +221,79 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
                 </div>
               </div>
             )}
-            
+
             {/* Scene 2: Alice responds */}
             {currentScene === 2 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="Alice" 
-                  text="But there's plenty of space!" 
+                <DialogueBox
+                  speaker="Alice"
+                  text="But there's plenty of space!"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c3_plenty_of_space}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 3: March Hare speaks */}
             {currentScene === 3 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="March Hare" 
-                  text="Have some tea — or don't. It's always tea time anyway!" 
+                <DialogueBox
+                  speaker="March Hare"
+                  text="Have some tea — or don't. It's always tea time anyway!"
                   delay={0}
                   characterImage={marchHareImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("March Hare")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "March Hare" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c3_have_some_tea}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 4: Alice questions */}
             {currentScene === 4 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="Alice" 
-                  text="Always? When do you have lunch?" 
+                <DialogueBox
+                  speaker="Alice"
+                  text="Always? When do you have lunch?"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c3_lunch}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 5: Tea cup shuffle */}
             {currentScene === 5 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
@@ -279,23 +326,31 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
                 </div>
               </div>
             )}
-            
+
             {/* Scene 6: Mad Hatter about Time */}
             {currentScene === 6 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="Mad Hatter" 
-                  text="When Time behaves himself, which he never does." 
+                <DialogueBox
+                  speaker="Mad Hatter"
+                  text="When Time behaves himself, which he never does."
                   delay={0}
                   characterImage={madHatterImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Mad Hatter" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c3_time_behaves}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 7: Dormouse sleeps */}
             {currentScene === 7 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
@@ -310,7 +365,7 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
                 </div>
               </div>
             )}
-            
+
             {/* Scene 8: Dormouse asleep image */}
             {currentScene === 8 && (
               <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
@@ -320,17 +375,28 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
                 </div>
               </div>
             )}
-            
+
             {/* Scene 9: Alice leaves & mini-game */}
             {currentScene === 9 && (
-              <div className="animate-fade-in w-full flex flex-col items-center space-y-6">
-                <DialogueBox 
-                  speaker="Alice" 
-                  text="I think I'll have my tea elsewhere…" 
+              <div className="animate-fade-in w-full flex flex-col items-center space-y-6" onClick={nextScene}>
+                <DialogueBox
+                  speaker="Alice"
+                  text="I think I'll have my tea elsewhere…"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c3_tea_elsewhere}
                 />
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
+                </div>
                 {!gameComplete ? (
                   <button
                     onClick={(e) => {
@@ -358,104 +424,110 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
         ) : (
           /* SCROLL MODE: Original stacked layout */
           <div className="space-y-6">
-          <DialogueBox 
-            speaker="Mad Hatter" 
-            text="No room! No room!" 
-            delay={0}
-            characterImage={madHatterImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
-          />
-          <div className="flex justify-center mt-4">
-            <img src={madHatterNoRoomImg} alt="Mad Hatter - No room" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
-          </div>
-          <DialogueBox 
-            speaker="Alice" 
-            text="But there's plenty of space!" 
-            delay={2500}
-            characterImage={aliceImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
-          />
-          <DialogueBox 
-            speaker="March Hare" 
-            text="Have some tea — or don't. It's always tea time anyway!" 
-            delay={5000}
-            characterImage={marchHareImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("March Hare")}
-          />
-          <DialogueBox 
-            speaker="Alice" 
-            text="Always? When do you have lunch?" 
-            delay={9500}
-            characterImage={aliceImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
-          />
-
-          <div className="bg-card rounded-3xl p-8 shadow-xl my-12">
-            <div className="flex justify-center gap-8 mb-6">
-              {teaCups.map((cup) => (
-                <div
-                  key={cup.id}
-                  className="text-7xl transition-all duration-500 transform hover:scale-110 hover:-rotate-12 cursor-pointer"
-                  style={{
-                    transform: `translateX(${(cup.position - 1) * 100}%)`,
-                  }}
-                >
-                  🫖
-                </div>
-              ))}
+            <DialogueBox
+              speaker="Mad Hatter"
+              text="No room! No room!"
+              delay={0}
+              characterImage={madHatterImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
+              audioFile={c3_no_room}
+            />
+            <div className="flex justify-center mt-4">
+              <img src={madHatterNoRoomImg} alt="Mad Hatter - No room" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
             </div>
-            <button
-              onClick={shuffleCups}
-              className="mx-auto block bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all hover:scale-105"
-            >
-              Shuffle the Tea Cups!
-            </button>
-          </div>
+            <DialogueBox
+              speaker="Alice"
+              text="But there's plenty of space!"
+              delay={2500}
+              characterImage={aliceImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c3_plenty_of_space}
+            />
+            <DialogueBox
+              speaker="March Hare"
+              text="Have some tea — or don't. It's always tea time anyway!"
+              delay={5000}
+              characterImage={marchHareImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("March Hare")}
+              audioFile={c3_have_some_tea}
+            />
+            <DialogueBox
+              speaker="Alice"
+              text="Always? When do you have lunch?"
+              delay={9500}
+              characterImage={aliceImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c3_lunch}
+            />
 
-
-          <DialogueBox 
-            speaker="Mad Hatter" 
-            text="When Time behaves himself, which he never does." 
-            delay={11500}
-            characterImage={madHatterImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
-          />
-
-          <div className="text-center my-6">
-            <div className="inline-flex items-center gap-3 bg-purple-900/70 text-white/90 backdrop-blur-sm rounded-2xl px-6 py-4">
-              <span className="text-5xl">😴</span>
-              <span className="italic text-white/90">(Dormouse falls asleep mid-sentence.)</span>
-            </div>
-          </div>
-
-          <div className="flex justify-center mt-4">
-            <img src={dormouseAsleepImg} alt="Dormouse asleep" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
-          </div>
-
-          <DialogueBox 
-            speaker="Alice" 
-            text="I think I'll have my tea elsewhere…" 
-            delay={14000}
-            characterImage={aliceImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
-          />
-
-          {!gameComplete && (
-            <div className="text-center pt-8">
+            <div className="bg-card rounded-3xl p-8 shadow-xl my-12">
+              <div className="flex justify-center gap-8 mb-6">
+                {teaCups.map((cup) => (
+                  <div
+                    key={cup.id}
+                    className="text-7xl transition-all duration-500 transform hover:scale-110 hover:-rotate-12 cursor-pointer"
+                    style={{
+                      transform: `translateX(${(cup.position - 1) * 100}%)`,
+                    }}
+                  >
+                    🫖
+                  </div>
+                ))}
+              </div>
               <button
-                onClick={() => setShowGame(true)}
-                className="bg-primary text-primary-foreground px-12 py-5 rounded-full text-xl font-bold hover:bg-primary/90 transition-all hover:scale-105 shadow-2xl animate-pulse"
+                onClick={shuffleCups}
+                className="mx-auto block bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all hover:scale-105"
               >
-                🍵 Escape the Endless Tea Party
+                Shuffle the Tea Cups!
               </button>
             </div>
-          )}
 
-          {gameComplete && (
-            <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-white text-center animate-fade-in">
-              <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
+
+            <DialogueBox
+              speaker="Mad Hatter"
+              text="When Time behaves himself, which he never does."
+              delay={11500}
+              characterImage={madHatterImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
+              audioFile={c3_time_behaves}
+            />
+
+            <div className="text-center my-6">
+              <div className="inline-flex items-center gap-3 bg-purple-900/70 text-white/90 backdrop-blur-sm rounded-2xl px-6 py-4">
+                <span className="text-5xl">😴</span>
+                <span className="italic text-white/90">(Dormouse falls asleep mid-sentence.)</span>
+              </div>
             </div>
-          )}
+
+            <div className="flex justify-center mt-4">
+              <img src={dormouseAsleepImg} alt="Dormouse asleep" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
+            </div>
+
+            <DialogueBox
+              speaker="Alice"
+              text="I think I'll have my tea elsewhere…"
+              delay={14000}
+              characterImage={aliceImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c3_tea_elsewhere}
+            />
+
+            {!gameComplete && (
+              <div className="text-center pt-8">
+                <button
+                  onClick={() => setShowGame(true)}
+                  className="bg-primary text-primary-foreground px-12 py-5 rounded-full text-xl font-bold hover:bg-primary/90 transition-all hover:scale-105 shadow-2xl animate-pulse"
+                >
+                  🍵 Escape the Endless Tea Party
+                </button>
+              </div>
+            )}
+
+            {gameComplete && (
+              <div className="bg-black/55 backdrop-blur-md rounded-2xl p-6 text-white text-center animate-fade-in">
+                <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
+              </div>
+            )}
           </div>
         )}
       </div>

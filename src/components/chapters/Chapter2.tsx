@@ -8,6 +8,14 @@ import aliceImg from "@/assets/alice.png";
 import { CharacterImage } from "../CharacterImage";
 import wallpaper from "@/assets/wallpaper.png";
 
+// Voice lines
+import c2_talking_bottles from "@/assets/voices/c2/c2_talking_bottles.m4a";
+import c2_drink_me from "@/assets/voices/c2/c2_drink_me.mp3";
+import c2_smaller_than_mouse from "@/assets/voices/c2/c2_smaller_than_mouse.m4a";
+import c2_you_again from "@/assets/voices/c2/c2_you_again.mp3";
+import c2_eat_me from "@/assets/voices/c2/c2_eat_me.mp3";
+import c2_growing_like_telescope from "@/assets/voices/c2/c2_growing_like_telescope.m4a";
+
 interface Chapter2Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
@@ -21,13 +29,22 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const [currentScene, setCurrentScene] = useState(0);
   const [clickMode, setClickMode] = useState(false); // Scroll mode is default
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
 
   const totalScenes = 8; // Total number of scenes in this chapter
 
   const nextScene = () => {
+    // Don't advance if audio is playing in click mode
+    if (clickMode && isAudioPlaying) {
+      return;
+    }
     if (currentScene < totalScenes - 1) {
       setCurrentScene(prev => prev + 1);
     }
+  };
+
+  const handleSpeakingChange = (speaking: boolean) => {
+    setIsAudioPlaying(speaking);
   };
 
   const handleGameSuccess = () => {
@@ -106,22 +123,22 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
           {/* Mode Toggle */}
           <div className="mb-6 flex justify-center gap-4">
             <button
-              onClick={() => setClickMode(true)}
-              className={`px-4 py-2 rounded-full transition-all ${clickMode
-                  ? 'bg-purple-500 text-white shadow-lg'
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-                }`}
-            >
-              📖 Story Mode
-            </button>
-            <button
               onClick={() => setClickMode(false)}
               className={`px-4 py-2 rounded-full transition-all ${!clickMode
-                  ? 'bg-purple-500 text-white shadow-lg'
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
                 }`}
             >
-              📜 Scroll Mode
+              � Scroll Mode
+            </button>
+            <button
+              onClick={() => setClickMode(true)}
+              className={`px-4 py-2 rounded-full transition-all ${clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
+            >
+              � Story Mode
             </button>
           </div>
 
@@ -141,10 +158,18 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   text="Drink me."
                   delay={0}
                   characterImage={drinkMeImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Bottle")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Bottle" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c2_drink_me}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
@@ -167,10 +192,18 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   text="Oh? Talking bottles now? Well, why not!"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c2_talking_bottles}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
@@ -215,9 +248,18 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   text="I'm smaller than a mouse! How curious this place is."
                   delay={0}
                   characterImage={aliceImg}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c2_smaller_than_mouse}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
@@ -230,13 +272,21 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   text="Eat me."
                   delay={0}
                   characterImage={eatMeCake}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Cake" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c2_eat_me}
                 />
                 <div className="flex justify-center mt-4">
                   <img src={eatMeCake} alt="Eat me cake" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
                 </div>
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
@@ -249,17 +299,42 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   text="You again? Alright then!"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c2_you_again}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Scene 7: Eat Me option appears */}
+            {/* Scene 7: Eat Me option appears with cake and dialog */}
             {currentScene === 7 && (
               <div className="animate-fade-in w-full">
+                {/* Show cake dialogue first */}
+                {aliceSize === "small" && (
+                  <div className="mb-8">
+                    <DialogueBox
+                      speaker="Cake"
+                      text="Eat me."
+                      delay={0}
+                      characterImage={eatMeCake}
+                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
+                      audioFile={c2_eat_me}
+                    />
+                    <div className="flex justify-center mt-4">
+                      <img src={eatMeCake} alt="Eat me cake" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 my-12">
                   <div
                     className={`transition-all duration-1000 flex-shrink-0 ${aliceSize === "large" ? "animate-grow" : ""}`}
@@ -289,20 +364,27 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                     )}
                   </div>
                 </div>
-                
+
                 {aliceSize === "small" && (
                   <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
                     🧁 Try eating the cake
                   </div>
                 )}
-                
+
                 {aliceSize === "large" && (
                   <div className="text-center space-y-6">
-                    <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center animate-fade-in">
-                      <p className="text-lg italic">"Oh my! I'm growing like a telescope!"</p>
-                      <p className="text-sm mt-2 opacity-75">- Alice</p>
-                    </div>
-                    
+                    <DialogueBox
+                      speaker="Alice"
+                      text="Oh my! I'm growing like a telescope!"
+                      delay={0}
+                      characterImage={aliceImg}
+                      onSpeakingChange={(speaking) => {
+                        setCurrentSpeaker(speaking ? "Alice" : null);
+                        handleSpeakingChange(speaking);
+                      }}
+                      audioFile={c2_growing_like_telescope}
+                    />
+
                     {!gameComplete ? (
                       <button
                         onClick={(e) => {
@@ -341,6 +423,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
               delay={3500}
               characterImage={drinkMeImg}
               onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Bottle")}
+              audioFile={c2_drink_me}
             />
             <div className="flex justify-center mt-4">
               <img src={drinkMeImg} alt="Drink me bottle" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
@@ -352,6 +435,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
               delay={5500}
               characterImage={aliceImg}
               onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c2_talking_bottles}
             />
 
             {/* Initially show only Drink Me option */}
@@ -403,6 +487,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   text="I'm smaller than a mouse! How curious this place is."
                   delay={0}
                   characterImage={aliceImg}
+                  audioFile={c2_smaller_than_mouse}
                 />
                 <DialogueBox
                   speaker="Cake"
@@ -410,6 +495,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   delay={4000}
                   characterImage={drinkMeImg}
                   onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
+                  audioFile={c2_eat_me}
                 />
                 <div className="flex justify-center mt-4">
                   <img src={eatMeCake} alt="Eat me cake" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
@@ -420,6 +506,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   delay={6000}
                   characterImage={aliceImg}
                   onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  audioFile={c2_you_again}
                 />
 
                 {/* Show Eat Me option after "You again?" */}
@@ -465,7 +552,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
             )}
 
             {aliceSize === "large" && (
-              <DialogueBox speaker="Alice" text="Oh my! I'm growing like a telescope!" delay={0} characterImage={aliceImg} />
+              <DialogueBox speaker="Alice" text="Oh my! I'm growing like a telescope!" delay={0} characterImage={aliceImg} audioFile={c2_growing_like_telescope} />
             )}
 
             {!gameComplete && aliceSize !== "normal" && (

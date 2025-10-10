@@ -10,6 +10,11 @@ import aliceFallsImg from "@/assets/alice-falls-down.png";
 import aliceSeesWhiteRabbitImg from "@/assets/alice-sees-white-rabbit.png";
 import wallpaper from "@/assets/wallpaper.png";
 
+// Voice lines
+import c1_oh_dear from "@/assets/voices/c1/c1_oh_dear.mp3";
+import c1_late_for_what from "@/assets/voices/c1/c1_late_for_what.m4a";
+import c1_peculiar_rabbit from "@/assets/voices/c1/c1_peculiar_rabbit.m4a";
+
 interface Chapter1Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
@@ -22,12 +27,24 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const [currentScene, setCurrentScene] = useState(0);
   const [clickMode, setClickMode] = useState(false); // Scroll mode is default
-  
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
+
   const totalScenes = 9; // Total number of scenes in this chapter
-  
+
   const nextScene = () => {
+    // Don't advance if audio is playing in click mode
+    if (clickMode && isAudioPlaying) {
+      return;
+    }
     if (currentScene < totalScenes - 1) {
       setCurrentScene(prev => prev + 1);
+    }
+  };
+
+  const handleSpeakingChange = (speaking: boolean) => {
+    setIsAudioPlaying(speaking);
+    if (currentSpeaker) {
+      setCurrentSpeaker(speaking ? currentSpeaker : null);
     }
   };
 
@@ -95,28 +112,26 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
           <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mb-8">
             Down the Rabbit Hole
           </h2>
-          
+
           {/* Mode Toggle */}
           <div className="mb-6 flex justify-center gap-4">
             <button
-              onClick={() => setClickMode(true)}
-              className={`px-4 py-2 rounded-full transition-all ${
-                clickMode 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-              }`}
+              onClick={() => setClickMode(false)}
+              className={`px-4 py-2 rounded-full transition-all ${!clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
             >
-              📖 Story Mode
+              � Scroll Mode
             </button>
             <button
-              onClick={() => setClickMode(false)}
-              className={`px-4 py-2 rounded-full transition-all ${
-                !clickMode 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-              }`}
+              onClick={() => setClickMode(true)}
+              className={`px-4 py-2 rounded-full transition-all ${clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
             >
-              📜 Scroll Mode
+              � Story Mode
             </button>
           </div>
 
@@ -140,19 +155,27 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
             {/* Scene 0: Alice's first line */}
             {currentScene === 0 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="Alice" 
-                  text="What a peculiar rabbit... wearing a coat and holding a watch?" 
+                <DialogueBox
+                  speaker="Alice"
+                  text="What a peculiar rabbit... wearing a coat and holding a watch?"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c1_peculiar_rabbit}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 1: Alice sees White Rabbit image */}
             {currentScene === 1 && (
               <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
@@ -162,39 +185,55 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
                 </div>
               </div>
             )}
-            
+
             {/* Scene 2: White Rabbit speaks */}
             {currentScene === 2 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="White Rabbit" 
-                  text="Oh dear! Oh dear! I shall be late!" 
+                <DialogueBox
+                  speaker="White Rabbit"
+                  text="Oh dear! Oh dear! I shall be late!"
                   delay={0}
                   characterImage={whiteRabbitImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("White Rabbit")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "White Rabbit" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c1_oh_dear}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 3: Alice responds */}
             {currentScene === 3 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
-                <DialogueBox 
-                  speaker="Alice" 
-                  text="Late for what? Wait! Come back!" 
+                <DialogueBox
+                  speaker="Alice"
+                  text="Late for what? Wait! Come back!"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c1_late_for_what}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 4: Narration - White Rabbit runs off */}
             {currentScene === 4 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
@@ -206,7 +245,7 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
                 </div>
               </div>
             )}
-            
+
             {/* Scene 5: Alice follows image */}
             {currentScene === 5 && (
               <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
@@ -269,31 +308,34 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
         ) : (
           /* SCROLL MODE: Original stacked layout */
           <div className="space-y-6">
-            <DialogueBox 
-              speaker="Alice" 
-              text="What a peculiar rabbit... wearing a coat and holding a watch?" 
+            <DialogueBox
+              speaker="Alice"
+              text="What a peculiar rabbit... wearing a coat and holding a watch?"
               delay={0}
               characterImage={aliceImg}
               onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c1_peculiar_rabbit}
             />
             <div className="flex justify-center mt-4">
               <img src={aliceSeesWhiteRabbitImg} alt="Alice sees White Rabbit" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
             </div>
-            <DialogueBox 
-              speaker="White Rabbit" 
-              text="Oh dear! Oh dear! I shall be late!" 
+            <DialogueBox
+              speaker="White Rabbit"
+              text="Oh dear! Oh dear! I shall be late!"
               delay={3500}
               characterImage={whiteRabbitImg}
               onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("White Rabbit")}
+              audioFile={c1_oh_dear}
             />
-            <DialogueBox 
-              speaker="Alice" 
-              text="Late for what? Wait! Come back!" 
+            <DialogueBox
+              speaker="Alice"
+              text="Late for what? Wait! Come back!"
               delay={6500}
               characterImage={aliceImg}
               onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c1_late_for_what}
             />
-            
+
             <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic animate-fade-in" style={{ animationDelay: "9000ms" }}>
               <p className="mb-2">(White Rabbit runs off. Alice follows.)</p>
             </div>
