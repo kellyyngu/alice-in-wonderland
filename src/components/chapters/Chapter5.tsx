@@ -24,6 +24,16 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [buttonCoords, setButtonCoords] = useState<{ left: string; top: string } | null>(null);
   const [flash, setFlash] = useState(false);
+  const [currentScene, setCurrentScene] = useState(0);
+  const [clickMode, setClickMode] = useState(false); // Scroll mode is default
+  
+  const totalScenes = 9; // Total number of scenes in this chapter
+  
+  const nextScene = () => {
+    if (currentScene < totalScenes - 1) {
+      setCurrentScene(prev => prev + 1);
+    }
+  };
 
   const handleExplosion = () => {
     // capture button position for localized explosions
@@ -203,6 +213,30 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                 The Queen's Court
               </h2>
               
+              {/* Mode Toggle */}
+              <div className="mb-6 flex justify-center gap-4">
+                <button
+                  onClick={() => setClickMode(true)}
+                  className={`px-4 py-2 rounded-full transition-all ${
+                    clickMode 
+                      ? 'bg-purple-500 text-white shadow-lg' 
+                      : 'bg-white/20 text-white/70 hover:bg-white/30'
+                  }`}
+                >
+                  📖 Click Mode
+                </button>
+                <button
+                  onClick={() => setClickMode(false)}
+                  className={`px-4 py-2 rounded-full transition-all ${
+                    !clickMode 
+                      ? 'bg-purple-500 text-white shadow-lg' 
+                      : 'bg-white/20 text-white/70 hover:bg-white/30'
+                  }`}
+                >
+                  📜 Scroll Mode
+                </button>
+              </div>
+              
               <div className="flex justify-center gap-8 mb-8">
                 <CharacterImage
                   src={queenOfHeartsImg}
@@ -217,17 +251,172 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                     className="max-w-[200px] animate-float"
                 />
               </div>
-
-              <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center text-lg italic animate-fade-in mb-8">
-                    Alice enters the Queen of Hearts' garden, where chaos reigns.
-                  </div>
-
-                  <div className="flex justify-center mt-4">
-                    <img src={qohGardenImg} alt="Queen of Hearts Garden" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
-                  </div>
             </div>
 
-            <div className="space-y-6">
+            {clickMode ? (
+              /* CLICK MODE: Single content area with fade transitions */
+              <div className="min-h-[400px] flex flex-col items-center justify-center">
+                {/* Scene 0: Queen speaks */}
+                {currentScene === 0 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <DialogueBox 
+                      speaker="Queen of Hearts" 
+                      text="Who are you?" 
+                      delay={0}
+                      characterImage={queenOfHeartsImg}
+                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Queen of Hearts")}
+                    />
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 1: QOH Garden intro */}
+                {currentScene === 1 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center text-lg italic">
+                      Alice enters the Queen of Hearts' garden, where chaos reigns.
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img src={qohGardenImg} alt="Queen of Hearts Garden" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+                    </div>
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 2: Alice responds */}
+                {currentScene === 2 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <DialogueBox 
+                      speaker="Alice" 
+                      text="My name is Alice, so please Your Majesty." 
+                      delay={0}
+                      characterImage={aliceImg}
+                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                    />
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 3: Queen's threat */}
+                {currentScene === 3 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <DialogueBox 
+                      speaker="Queen of Hearts" 
+                      text="Off with her head!" 
+                      delay={0}
+                      characterImage={queenOfHeartsImg}
+                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Queen of Hearts")}
+                    />
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 4: King intervenes */}
+                {currentScene === 4 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <DialogueBox 
+                      speaker="King" 
+                      text="Consider, my dear: she is only a child!" 
+                      delay={0}
+                      characterImage={kingOfHeartsImg}
+                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("King")}
+                    />
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 5: Alice's defiance */}
+                {currentScene === 5 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <DialogueBox 
+                      speaker="Alice" 
+                      text="You're nothing but a pack of cards!" 
+                      delay={0}
+                      characterImage={aliceImg}
+                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                    />
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 6: Alice defiance image */}
+                {currentScene === 6 && (
+                  <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
+                    <img src={aliceDefianceImg} alt="Alice stands defiant" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 7: Narration */}
+                {currentScene === 7 && (
+                  <div className="animate-fade-in w-full" onClick={nextScene}>
+                    <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic">
+                      <p>(The cards fly up all around Alice, swirling like a storm...)</p>
+                    </div>
+                    <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                      👆 Click to continue
+                    </div>
+                  </div>
+                )}
+                
+                {/* Scene 8: Explosion button */}
+                {currentScene === 8 && (
+                  <div className="animate-fade-in w-full flex flex-col items-center space-y-6">
+                    {!exploded ? (
+                      <button
+                        ref={buttonRef}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleExplosion();
+                        }}
+                        onMouseEnter={() => setShaking(true)}
+                        onMouseLeave={() => setShaking(false)}
+                        className={`bg-red-600 text-white px-12 py-5 rounded-full text-xl font-bold hover:bg-red-700 transition-all hover:scale-105 shadow-2xl ${
+                          shaking ? "animate-shake" : "animate-pulse"
+                        }`}
+                      >
+                        🃏 Face the Cards!
+                      </button>
+                    ) : (
+                      <div className="text-center space-y-4">
+                        <p className="text-2xl text-green-400 font-bold animate-bounce">✅ Chapter 5 Complete!</p>
+                        <button
+                          onClick={() => goTo?.(6)}
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:scale-105 transition-all shadow-xl"
+                        >
+                          Continue to Awakening →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* SCROLL MODE: Original stacked layout */
+              <div className="space-y-6">
+                <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center text-lg italic animate-fade-in mb-8">
+                  Alice enters the Queen of Hearts' garden, where chaos reigns.
+                </div>
+
+                <div className="flex justify-center mt-4">
+                  <img src={qohGardenImg} alt="Queen of Hearts Garden" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+                </div>
+                
+                <div className="space-y-6">
               <DialogueBox
                 speaker="Queen of Hearts"
                 text="Who painted my roses red? Off with their heads!"
@@ -279,7 +468,9 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                               {/* Gallery entry removed per design; user returns to awakening flow */}
                         </div>
                       )}
-            </div>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           // Awakening moved to a dedicated page shown after Chapter 5 completes.

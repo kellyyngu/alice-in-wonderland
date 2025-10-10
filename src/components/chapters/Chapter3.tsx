@@ -25,6 +25,16 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
   const [showGame, setShowGame] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
+  const [currentScene, setCurrentScene] = useState(0);
+  const [clickMode, setClickMode] = useState(false); // Scroll mode is default
+  
+  const totalScenes = 10; // Total number of scenes in this chapter
+  
+  const nextScene = () => {
+    if (currentScene < totalScenes - 1) {
+      setCurrentScene(prev => prev + 1);
+    }
+  };
 
   const shuffleCups = () => {
     setTeaCups((prev) => {
@@ -112,6 +122,30 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
             The Mad Tea Party
           </h2>
 
+          {/* Mode Toggle */}
+          <div className="mb-6 flex justify-center gap-4">
+            <button
+              onClick={() => setClickMode(true)}
+              className={`px-4 py-2 rounded-full transition-all ${
+                clickMode 
+                  ? 'bg-purple-500 text-white shadow-lg' 
+                  : 'bg-white/20 text-white/70 hover:bg-white/30'
+              }`}
+            >
+              📖 Click Mode
+            </button>
+            <button
+              onClick={() => setClickMode(false)}
+              className={`px-4 py-2 rounded-full transition-all ${
+                !clickMode 
+                  ? 'bg-purple-500 text-white shadow-lg' 
+                  : 'bg-white/20 text-white/70 hover:bg-white/30'
+              }`}
+            >
+              📜 Scroll Mode
+            </button>
+          </div>
+
           <div className="flex justify-center gap-8 mb-8">
             <CharacterImage
               src={madHatterImg}
@@ -136,7 +170,194 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
           </div>
         </div>
 
-        <div className="space-y-6">
+        {clickMode ? (
+          /* CLICK MODE: Single content area with fade transitions */
+          <div className="min-h-[400px] flex flex-col items-center justify-center">
+            {/* Scene 0: Mad Hatter - No room */}
+            {currentScene === 0 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox 
+                  speaker="Mad Hatter" 
+                  text="No room! No room!" 
+                  delay={0}
+                  characterImage={madHatterImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 1: Mad Hatter No Room image */}
+            {currentScene === 1 && (
+              <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
+                <img src={madHatterNoRoomImg} alt="Mad Hatter - No room" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 2: Alice responds */}
+            {currentScene === 2 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox 
+                  speaker="Alice" 
+                  text="But there's plenty of space!" 
+                  delay={0}
+                  characterImage={aliceImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 3: March Hare speaks */}
+            {currentScene === 3 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox 
+                  speaker="March Hare" 
+                  text="Have some tea — or don't. It's always tea time anyway!" 
+                  delay={0}
+                  characterImage={marchHareImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("March Hare")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 4: Alice questions */}
+            {currentScene === 4 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox 
+                  speaker="Alice" 
+                  text="Always? When do you have lunch?" 
+                  delay={0}
+                  characterImage={aliceImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 5: Tea cup shuffle */}
+            {currentScene === 5 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <div className="bg-card rounded-3xl p-8 shadow-xl">
+                  <div className="flex justify-center gap-8 mb-6">
+                    {teaCups.map((cup) => (
+                      <div
+                        key={cup.id}
+                        className="text-7xl transition-all duration-500 transform hover:scale-110 hover:-rotate-12 cursor-pointer"
+                        style={{
+                          transform: `translateX(${(cup.position - 1) * 100}%)`,
+                        }}
+                      >
+                        🫖
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      shuffleCups();
+                    }}
+                    className="mx-auto block bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all hover:scale-105"
+                  >
+                    Shuffle the Tea Cups!
+                  </button>
+                </div>
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 6: Mad Hatter about Time */}
+            {currentScene === 6 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox 
+                  speaker="Mad Hatter" 
+                  text="When Time behaves himself, which he never does." 
+                  delay={0}
+                  characterImage={madHatterImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Mad Hatter")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 7: Dormouse sleeps */}
+            {currentScene === 7 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <div className="text-center my-6">
+                  <div className="inline-flex items-center gap-3 bg-purple-900/70 text-white/90 backdrop-blur-sm rounded-2xl px-6 py-4">
+                    <span className="text-5xl">😴</span>
+                    <span className="italic text-white/90">(Dormouse falls asleep mid-sentence.)</span>
+                  </div>
+                </div>
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 8: Dormouse asleep image */}
+            {currentScene === 8 && (
+              <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
+                <img src={dormouseAsleepImg} alt="Dormouse asleep" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 9: Alice leaves & mini-game */}
+            {currentScene === 9 && (
+              <div className="animate-fade-in w-full flex flex-col items-center space-y-6">
+                <DialogueBox 
+                  speaker="Alice" 
+                  text="I think I'll have my tea elsewhere…" 
+                  delay={0}
+                  characterImage={aliceImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                />
+                {!gameComplete ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowGame(true);
+                    }}
+                    className="bg-primary text-primary-foreground px-12 py-5 rounded-full text-xl font-bold hover:bg-primary/90 transition-all hover:scale-105 shadow-2xl animate-pulse"
+                  >
+                    🍵 Escape the Endless Tea Party
+                  </button>
+                ) : (
+                  <div className="text-center space-y-4">
+                    <p className="text-2xl text-green-400 font-bold animate-bounce">✅ Chapter 3 Complete!</p>
+                    <button
+                      onClick={() => goTo?.(4)}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:scale-105 transition-all shadow-xl"
+                    >
+                      Continue to Chapter 4 →
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* SCROLL MODE: Original stacked layout */
+          <div className="space-y-6">
           <DialogueBox 
             speaker="Mad Hatter" 
             text="No room! No room!" 
@@ -235,7 +456,8 @@ export const Chapter3 = ({ isUnlocked = false, onComplete, goTo }: Chapter3Props
               <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
             </div>
           )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
