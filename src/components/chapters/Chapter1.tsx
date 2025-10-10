@@ -106,7 +106,7 @@ export const Chapter1 = ({ isUnlocked = true, onComplete, goTo }: Chapter1Props)
                   : 'bg-white/20 text-white/70 hover:bg-white/30'
               }`}
             >
-              📖 Click Mode
+              📖 Story Mode
             </button>
             <button
               onClick={() => setClickMode(false)}
