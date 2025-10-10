@@ -24,7 +24,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
   const [currentScene, setCurrentScene] = useState(0);
   const [clickMode, setClickMode] = useState(false); // Scroll mode is default
   
-  const totalScenes = 8; // Total number of scenes in this chapter
+  const totalScenes = 10; // Total number of scenes in this chapter
   
   const nextScene = () => {
     if (currentScene < totalScenes - 1) {
@@ -209,18 +209,8 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
               </div>
             )}
             
-            {/* Scene 3: Cheshire Cat talking image */}
+            {/* Scene 3: Alice's incomplete response */}
             {currentScene === 3 && (
-              <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
-                <img src={cheshireCatTalkingImg} alt="Cheshire Cat talking" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
-                </div>
-              </div>
-            )}
-            
-            {/* Scene 4: Alice's response */}
-            {currentScene === 4 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
                 <DialogueBox
                   speaker="Alice"
@@ -235,8 +225,8 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
               </div>
             )}
             
-            {/* Scene 5: Cheshire Cat's wisdom */}
-            {currentScene === 5 && (
+            {/* Scene 4: Cheshire Cat's wisdom */}
+            {currentScene === 4 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
                 <DialogueBox
                   speaker="Cheshire Cat"
@@ -251,11 +241,56 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
               </div>
             )}
             
-            {/* Scene 6: Narration */}
+            {/* Scene 5: Cheshire Cat talking image */}
+            {currentScene === 5 && (
+              <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
+                <img src={cheshireCatTalkingImg} alt="Cheshire Cat talking" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 6: Alice's response */}
             {currentScene === 6 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox
+                  speaker="Alice"
+                  text="You're not very helpful."
+                  delay={0}
+                  characterImage={aliceImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+            {/* Scene 7: Cheshire Cat's famous line */}
+            {currentScene === 7 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox
+                  speaker="Cheshire Cat"
+                  text="Everyone's mad here. I'm mad. You're mad."
+                  delay={0}
+                  characterImage={cheshireCatImg}
+                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
+                  👆 Click to continue
+                </div>
+              </div>
+            )}
+            
+
+            
+            {/* Scene 8: Narration about the grin */}
+            {currentScene === 8 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
                 <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic">
-                  <p>(The Cheshire Cat begins to fade, leaving only its grin behind...)</p>
+                  <p>(The cat's grin lingers after the rest fades away.)</p>
+                  <div className="mt-4 text-sm">(Click the cat to see the grin effect!)</div>
                 </div>
                 <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
                   👆 Click to continue
@@ -263,8 +298,8 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
               </div>
             )}
             
-            {/* Scene 7: Lingering grin image & mini-game */}
-            {currentScene === 7 && (
+            {/* Scene 9: Lingering grin image & mini-game */}
+            {currentScene === 9 && (
               <div className="animate-fade-in w-full flex flex-col items-center space-y-6">
                 <img src={cheshireLingeringImg} alt="Cheshire grin lingering" className="max-w-sm w-full md:w-auto rounded-2xl shadow-2xl" />
                 {!gameComplete ? (
