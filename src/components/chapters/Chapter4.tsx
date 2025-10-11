@@ -9,6 +9,14 @@ import cheshireCatTalkingImg from "@/assets/cheshire-cat-talking.png";
 import cheshireLingeringImg from "@/assets/cheshire-lingering.png";
 import wallpaper from "@/assets/wallpaper.png";
 
+// Voice lines
+import c4_excuse_me from "@/assets/voices/c4/c4_Excuse_me.m4a";
+import c4_that_depends from "@/assets/voices/c4/c4_that_depends.mp3";
+import c4_i_dont_care from "@/assets/voices/c4/c4_i_dont_care.m4a";
+import c4_it_doesnt_matter from "@/assets/voices/c4/c4_it_doesnt_matter.mp3";
+import c4_not_helpful from "@/assets/voices/c4/c4_not_helpful.m4a";
+import c4_everyones_mad from "@/assets/voices/c4/c4_everyones_mad.mp3";
+
 interface Chapter4Props {
   isUnlocked?: boolean;
   onComplete?: () => void;
@@ -23,10 +31,19 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const [currentScene, setCurrentScene] = useState(0);
   const [clickMode, setClickMode] = useState(false); // Scroll mode is default
-  
-  const totalScenes = 8; // Total number of scenes in this chapter
-  
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+  const totalScenes = 10; // Total number of scenes in this chapter
+
+  const handleSpeakingChange = (speaking: boolean) => {
+    setIsAudioPlaying(speaking);
+  };
+
   const nextScene = () => {
+    // Prevent advancing if audio is playing in click mode
+    if (clickMode && isAudioPlaying) {
+      return;
+    }
     if (currentScene < totalScenes - 1) {
       setCurrentScene(prev => prev + 1);
     }
@@ -113,24 +130,22 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
           {/* Mode Toggle */}
           <div className="mb-6 flex justify-center gap-4">
             <button
-              onClick={() => setClickMode(true)}
-              className={`px-4 py-2 rounded-full transition-all ${
-                clickMode 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-              }`}
+              onClick={() => setClickMode(false)}
+              className={`px-4 py-2 rounded-full transition-all ${!clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
             >
-              📖 Story Mode
+              � Scroll Mode
             </button>
             <button
-              onClick={() => setClickMode(false)}
-              className={`px-4 py-2 rounded-full transition-all ${
-                !clickMode 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'bg-white/20 text-white/70 hover:bg-white/30'
-              }`}
+              onClick={() => setClickMode(true)}
+              className={`px-4 py-2 rounded-full transition-all ${clickMode
+                ? 'bg-purple-500 text-white shadow-lg'
+                : 'bg-white/20 text-white/70 hover:bg-white/30'
+                }`}
             >
-              📜 Scroll Mode
+              � Story Mode
             </button>
           </div>
 
@@ -144,9 +159,8 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
           >
             {!grinOnly && (
               <div
-                className={`transition-opacity duration-1000 ${
-                  catVisible ? "animate-appear" : "animate-disappear"
-                }`}
+                className={`transition-opacity duration-1000 ${catVisible ? "animate-appear" : "animate-disappear"
+                  }`}
               >
                 <CharacterImage
                   src={cheshireCatImg}
@@ -175,14 +189,22 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
                   text="Excuse me, could you tell me which way I ought to go from here?"
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c4_excuse_me}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
+
             {/* Scene 1: Alice meets Cheshire Cat image */}
             {currentScene === 1 && (
               <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
@@ -192,7 +214,7 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
                 </div>
               </div>
             )}
-            
+
             {/* Scene 2: Cheshire Cat responds */}
             {currentScene === 2 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
@@ -201,16 +223,72 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
                   text="That depends a good deal on where you want to get to."
                   delay={0}
                   characterImage={cheshireCatImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Cheshire Cat" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c4_that_depends}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
-            {/* Scene 3: Cheshire Cat talking image */}
+
+            {/* Scene 3: Alice's incomplete response */}
             {currentScene === 3 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox
+                  speaker="Alice"
+                  text="I don't much care where—"
+                  delay={0}
+                  characterImage={aliceImg}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c4_i_dont_care}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Scene 4: Cheshire Cat's wisdom */}
+            {currentScene === 4 && (
+              <div className="animate-fade-in w-full" onClick={nextScene}>
+                <DialogueBox
+                  speaker="Cheshire Cat"
+                  text="Then it doesn't matter which way you go."
+                  delay={0}
+                  characterImage={cheshireCatImg}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Cheshire Cat" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c4_it_doesnt_matter}
+                />
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Scene 5: Cheshire Cat talking image */}
+            {currentScene === 5 && (
               <div className="animate-fade-in w-full flex flex-col items-center" onClick={nextScene}>
                 <img src={cheshireCatTalkingImg} alt="Cheshire Cat talking" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
                 <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
@@ -218,53 +296,72 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
                 </div>
               </div>
             )}
-            
-            {/* Scene 4: Alice's response */}
-            {currentScene === 4 && (
+
+            {/* Scene 6: Alice's response */}
+            {currentScene === 6 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
                 <DialogueBox
                   speaker="Alice"
-                  text="I don't much care where—"
+                  text="You're not very helpful."
                   delay={0}
                   characterImage={aliceImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Alice" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c4_not_helpful}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
-            {/* Scene 5: Cheshire Cat's wisdom */}
-            {currentScene === 5 && (
+
+            {/* Scene 7: Cheshire Cat's famous line */}
+            {currentScene === 7 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
                 <DialogueBox
                   speaker="Cheshire Cat"
-                  text="Then it doesn't matter which way you go."
+                  text="Everyone's mad here. I'm mad. You're mad."
                   delay={0}
                   characterImage={cheshireCatImg}
-                  onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
+                  onSpeakingChange={(speaking) => {
+                    setCurrentSpeaker(speaking ? "Cheshire Cat" : null);
+                    handleSpeakingChange(speaking);
+                  }}
+                  audioFile={c4_everyones_mad}
                 />
-                <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
-                  👆 Click to continue
+                <div className="text-center mt-4 text-white/60 text-sm">
+                  {isAudioPlaying ? (
+                    <span className="animate-pulse">🔊 Playing audio...</span>
+                  ) : (
+                    <span className="animate-pulse">👆 Click to continue</span>
+                  )}
                 </div>
               </div>
             )}
-            
-            {/* Scene 6: Narration */}
-            {currentScene === 6 && (
+
+
+
+            {/* Scene 8: Narration about the grin */}
+            {currentScene === 8 && (
               <div className="animate-fade-in w-full" onClick={nextScene}>
                 <div className="bg-purple-900/70 text-white backdrop-blur-sm rounded-2xl p-6 text-center text-lg italic">
-                  <p>(The Cheshire Cat begins to fade, leaving only its grin behind...)</p>
+                  <p>(The cat's grin lingers after the rest fades away.)</p>
+                  <div className="mt-4 text-sm">(Click the cat to see the grin effect!)</div>
                 </div>
                 <div className="text-center mt-4 text-white/60 text-sm animate-pulse">
                   👆 Click to continue
                 </div>
               </div>
             )}
-            
-            {/* Scene 7: Lingering grin image & mini-game */}
-            {currentScene === 7 && (
+
+            {/* Scene 9: Lingering grin image & mini-game */}
+            {currentScene === 9 && (
               <div className="animate-fade-in w-full flex flex-col items-center space-y-6">
                 <img src={cheshireLingeringImg} alt="Cheshire grin lingering" className="max-w-sm w-full md:w-auto rounded-2xl shadow-2xl" />
                 {!gameComplete ? (
@@ -294,77 +391,83 @@ export const Chapter4 = ({ isUnlocked = false, onComplete, goTo }: Chapter4Props
         ) : (
           /* SCROLL MODE: Original stacked layout */
           <div className="space-y-6">
-          <DialogueBox
-            speaker="Alice"
-            text="Excuse me, could you tell me which way I ought to go from here?"
-            delay={0}
-            characterImage={aliceImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
-          />
-          {/* Image: Alice meets the Cheshire Cat (placed immediately after Alice's question) */}
-          <div className="flex justify-center mt-4">
-            <img src={aliceMeetsCheshireImg} alt="Alice meets the Cheshire Cat" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
-          </div>
-          <DialogueBox
-            speaker="Cheshire Cat"
-            text="That depends on where you want to get to."
-            delay={4000}
-            characterImage={cheshireCatImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
-          />
-          <DialogueBox 
-            speaker="Alice" 
-            text="I don't much care where…" 
-            delay={7500}
-            characterImage={aliceImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
-          />
-          <DialogueBox
-            speaker="Cheshire Cat"
-            text="Then it doesn't matter which way you go."
-            delay={10000}
-            characterImage={cheshireCatImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
-          />
-          <div className="flex justify-center mt-4">
-            <img src={cheshireCatTalkingImg} alt="Cheshire Cat talking" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
-          </div>
-          <DialogueBox 
-            speaker="Alice" 
-            text="You're not very helpful." 
-            delay={13500}
-            characterImage={aliceImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
-          />
-          <DialogueBox
-            speaker="Cheshire Cat"
-            text="Everyone's mad here. I'm mad. You're mad."
-            delay={16000}
-            characterImage={cheshireCatImg}
-            onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
-          />
-
-          <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center italic animate-fade-in mt-12">
-            (The cat's grin lingers after the rest fades away.)
-            <div className="mt-4 text-sm">(Click the cat to see the grin effect!)</div>
-          </div>
-
-          {!gameComplete && (
-            <div className="text-center pt-8">
-              <button
-                onClick={() => setShowGame(true)}
-                className="bg-secondary text-secondary-foreground px-12 py-5 rounded-full text-xl font-bold hover:bg-secondary/90 transition-all hover:scale-105 shadow-2xl animate-pulse"
-              >
-                😸 Solve the Cheshire's Riddle
-              </button>
+            <DialogueBox
+              speaker="Alice"
+              text="Excuse me, could you tell me which way I ought to go from here?"
+              delay={0}
+              characterImage={aliceImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c4_excuse_me}
+            />
+            {/* Image: Alice meets the Cheshire Cat (placed immediately after Alice's question) */}
+            <div className="flex justify-center mt-4">
+              <img src={aliceMeetsCheshireImg} alt="Alice meets the Cheshire Cat" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
             </div>
-          )}
-
-          {gameComplete && (
-            <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center animate-fade-in">
-              <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
+            <DialogueBox
+              speaker="Cheshire Cat"
+              text="That depends on where you want to get to."
+              delay={4000}
+              characterImage={cheshireCatImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
+              audioFile={c4_that_depends}
+            />
+            <DialogueBox
+              speaker="Alice"
+              text="I don't much care where…"
+              delay={7500}
+              characterImage={aliceImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c4_i_dont_care}
+            />
+            <DialogueBox
+              speaker="Cheshire Cat"
+              text="Then it doesn't matter which way you go."
+              delay={10000}
+              characterImage={cheshireCatImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
+              audioFile={c4_it_doesnt_matter}
+            />
+            <div className="flex justify-center mt-4">
+              <img src={cheshireCatTalkingImg} alt="Cheshire Cat talking" className="max-w-md w-full md:w-auto rounded-2xl shadow-2xl" />
             </div>
-          )}
+            <DialogueBox
+              speaker="Alice"
+              text="You're not very helpful."
+              delay={13500}
+              characterImage={aliceImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Alice")}
+              audioFile={c4_not_helpful}
+            />
+            <DialogueBox
+              speaker="Cheshire Cat"
+              text="Everyone's mad here. I'm mad. You're mad."
+              delay={16000}
+              characterImage={cheshireCatImg}
+              onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cheshire Cat")}
+              audioFile={c4_everyones_mad}
+            />
+
+            <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center italic animate-fade-in mt-12">
+              (The cat's grin lingers after the rest fades away.)
+              <div className="mt-4 text-sm">(Click the cat to see the grin effect!)</div>
+            </div>
+
+            {!gameComplete && (
+              <div className="text-center pt-8">
+                <button
+                  onClick={() => setShowGame(true)}
+                  className="bg-secondary text-secondary-foreground px-12 py-5 rounded-full text-xl font-bold hover:bg-secondary/90 transition-all hover:scale-105 shadow-2xl animate-pulse"
+                >
+                  😸 Solve the Cheshire's Riddle
+                </button>
+              </div>
+            )}
+
+            {gameComplete && (
+              <div className="bg-purple-900/70 text-white backdrop-blur-md rounded-2xl p-6 text-center animate-fade-in">
+                <p className="text-xl font-semibold">✨ Chapter Complete! Scroll down to continue...</p>
+              </div>
+            )}
           </div>
         )}
       </div>
