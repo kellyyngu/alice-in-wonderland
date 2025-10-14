@@ -129,7 +129,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                 : 'bg-white/20 text-white/70 hover:bg-white/30'
                 }`}
             >
-              � Scroll Mode
+              📜 Scroll Mode
             </button>
             <button
               onClick={() => setClickMode(true)}
@@ -138,7 +138,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                 : 'bg-white/20 text-white/70 hover:bg-white/30'
                 }`}
             >
-              � Story Mode
+              📖 Story Mode
             </button>
           </div>
 
@@ -318,22 +318,20 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
             {/* Scene 7: Eat Me option appears with cake and dialog */}
             {currentScene === 7 && (
               <div className="animate-fade-in w-full">
-                {/* Show cake dialogue first */}
-                {aliceSize === "small" && (
-                  <div className="mb-8">
-                    <DialogueBox
-                      speaker="Cake"
-                      text="Eat me."
-                      delay={0}
-                      characterImage={eatMeCake}
-                      onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
-                      audioFile={c2_eat_me}
-                    />
-                    <div className="flex justify-center mt-4">
-                      <img src={eatMeCake} alt="Eat me cake" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
-                    </div>
+                {/* Show cake dialogue - keep it visible even after eating */}
+                <div className="mb-8">
+                  <DialogueBox
+                    speaker="Cake"
+                    text="Eat me."
+                    delay={0}
+                    characterImage={eatMeCake}
+                    onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
+                    audioFile={c2_eat_me}
+                  />
+                  <div className="flex justify-center mt-4">
+                    <img src={eatMeCake} alt="Eat me cake" className="max-w-xs w-full md:w-auto rounded-2xl shadow-2xl" />
                   </div>
-                )}
+                </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 my-12">
                   <div
@@ -377,7 +375,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                       speaker="Alice"
                       text="Oh my! I'm growing like a telescope!"
                       delay={0}
-                      characterImage={aliceImg}
+                      characterImage={eatMeCake}
                       onSpeakingChange={(speaking) => {
                         setCurrentSpeaker(speaking ? "Alice" : null);
                         handleSpeakingChange(speaking);
@@ -480,7 +478,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
               </div>
             </div>
 
-            {aliceSize === "small" && (
+            {(aliceSize === "small" || aliceSize === "large") && (
               <>
                 <DialogueBox
                   speaker="Alice"
@@ -493,7 +491,7 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                   speaker="Cake"
                   text="Eat me."
                   delay={4000}
-                  characterImage={drinkMeImg}
+                  characterImage={eatMeCake}
                   onSpeakingChange={(speaking) => speaking && setCurrentSpeaker("Cake")}
                   audioFile={c2_eat_me}
                 />
@@ -512,9 +510,9 @@ export const Chapter2 = ({ isUnlocked = false, onComplete, goTo }: Chapter2Props
                 {/* Show Eat Me option after "You again?" */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 my-12">
                   <div
-                    className={`transition-all duration-1000 flex-shrink-0 ${(aliceSize as string) === "large" ? "animate-grow" : ""}`}
+                    className={`transition-all duration-1000 flex-shrink-0 ${aliceSize === "large" ? "animate-grow" : ""}`}
                     style={{
-                      transform: (aliceSize as string) === "large" ? "scale(2.2)" : "scale(0.5)",
+                      transform: aliceSize === "large" ? "scale(2.2)" : "scale(0.5)",
                     }}
                   >
                     <div className="mx-auto md:mx-0">

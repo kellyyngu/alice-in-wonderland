@@ -238,7 +238,7 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                     : 'bg-white/20 text-white/70 hover:bg-white/30'
                     }`}
                 >
-                  � Scroll Mode
+                  📜 Scroll Mode
                 </button>
                 <button
                   onClick={() => setClickMode(true)}
@@ -247,7 +247,7 @@ export const Chapter5 = ({ isUnlocked = false, onComplete, goTo }: Chapter5Props
                     : 'bg-white/20 text-white/70 hover:bg-white/30'
                     }`}
                 >
-                  � Story Mode
+                  📖 Story Mode
                 </button>
               </div>
 
